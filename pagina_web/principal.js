@@ -368,14 +368,6 @@ function escribirNumero(id, numero, decimales) {
 
 let diasPeriodo = 7;   // 7 = semana, 30 = mes
 
-// Rangos de referencia para arrecifes de coral (se pueden cambiar aquí).
-// Si el valor está dentro del rango, la tarjeta dice "Normal".
-const RANGOS = {
-  temp: { min: 23, max: 29 },
-  ph: { min: 7.8, max: 8.5 },
-  turb: { min: 0, max: 5 },
-};
-
 // Cada variable con sus ids en el HTML, su nombre y cuántos decimales mostrar
 const VARIABLES = {
   temp: { nombre: "Temperatura", unidad: " °C", valor: "valorTemp", cambio: "cambioTemp", chip: "chipTemp", prom: "promTemp", min: "minTemp", max: "maxTemp", decimales: 1 },
@@ -388,10 +380,64 @@ const COLORES = { temp: "#ff6b6b", ph: "#1fa8b0", turb: "#2fae7a" };
 const COLOR_LETRAS = "#557a87";
 const COLOR_RAYAS = "#e1eef1";
 
-// enRango: true si el valor está dentro del rango de referencia
-function enRango(nombre, valor) {
-  return !isNaN(valor) && valor >= RANGOS[nombre].min && valor <= RANGOS[nombre].max;
+
+// ************************************************************
+// ★★★ ANÁLISIS DE DATOS ★★★
+// Aquí es donde la página decide si cada valor está bien o mal,
+// y con eso el estado (y el color) del coral.
+//
+// Rangos sacados de la tabla de la presentación
+// "¿Cómo toma decisiones Coralis?":
+//
+//   Variable      Ideal            Medio                       Crítico
+//   pH            7.89 – 8.08      6.5 – 7.89 (o 8.08 – 8.5)   menos de 6.5 (o más de 8.5)
+//   Temperatura   25 – 27 °C       18 – 25 o 27 – 29 °C        más de 29 °C (30–31) o menos de 18 °C (16–18)
+//   Turbidez      0 – 3 NTU        3 – 5.5 NTU                 más de 5.5 NTU
+//
+// (Lo que está entre paréntesis no venía en la tabla y lo completamos:
+//  el pH alto y los espacios entre rangos de temperatura.)
+// ************************************************************
+const RANGOS = {
+  //      ideal: entre estos dos       crítico: por debajo de "bajo" o por encima de "alto"
+  temp: { idealMin: 25,   idealMax: 27,   criticoBajo: 18,   criticoAlto: 29 },
+  ph:   { idealMin: 7.89, idealMax: 8.08, criticoBajo: 6.5,  criticoAlto: 8.5 },
+  turb: { idealMin: 0,    idealMax: 3,    criticoBajo: -1,   criticoAlto: 5.5 },
+};
+
+// Los 3 niveles, de mejor a peor
+const NIVELES = ["ideal", "medio", "critico"];
+const NOMBRE_NIVEL = { ideal: "Ideal", medio: "Medio", critico: "Crítico" };
+
+// nivelDe: dice si un valor está en nivel "ideal", "medio" o "critico"
+//   1) si está entre idealMin e idealMax       -> ideal
+//   2) si está por debajo de criticoBajo o
+//      por encima de criticoAlto                -> crítico
+//   3) cualquier otro valor (está en el medio)  -> medio
+function nivelDe(nombre, valor) {
+  if (isNaN(valor)) return null;
+  const r = RANGOS[nombre];
+  if (valor >= r.idealMin && valor <= r.idealMax) return "ideal";
+  if (valor < r.criticoBajo || valor > r.criticoAlto) return "critico";
+  return "medio";
 }
+
+// saludDelCoral: el estado del coral lo decide la PEOR variable
+//   todas ideales            -> coral sano (verde)
+//   alguna en medio          -> coral en riesgo (pálido)
+//   alguna en crítico        -> coral blanqueado (blanco)
+function saludDelCoral(valores) {
+  const niveles = {};
+  for (const nombre in VARIABLES) {
+    const n = nivelDe(nombre, valores[nombre]);
+    if (n) niveles[nombre] = n;
+  }
+  const lista = Object.values(niveles);
+  if (lista.length === 0) return { clase: "", titulo: "Sin datos", niveles };
+  if (lista.includes("critico")) return { clase: "blanqueado", titulo: "Coral blanqueado", niveles };
+  if (lista.includes("medio")) return { clase: "riesgo", titulo: "Coral en riesgo", niveles };
+  return { clase: "sano", titulo: "Coral saludable", niveles };
+}
+// ************************ FIN DEL ANÁLISIS ************************
 
 
 // ---------- EL CORAL QUE CAMBIA DE COLOR ----------
@@ -423,35 +469,23 @@ const DIBUJO_CORAL = `
 // Se pone el dibujo en todos los lugares que tengan class="coral"
 document.querySelectorAll(".coral").forEach((caja) => (caja.innerHTML = DIBUJO_CORAL));
 
-// saludDelCoral: según cuántos valores están en rango, decide el estado del coral
-//   3 de 3 en rango -> sano (colorido)
-//   1 o 2           -> en riesgo (pálido)
-//   0               -> blanqueado (blanco)
-function saludDelCoral(valores) {
-  const nombres = Object.keys(VARIABLES).filter((n) => !isNaN(valores[n]));   // solo los que tienen dato
-  const bien = nombres.filter((n) => enRango(n, valores[n]));
-  if (nombres.length === 0) return { clase: "", titulo: "Sin datos", bien, nombres };
-  if (bien.length === nombres.length) return { clase: "sano", titulo: "Coral saludable", bien, nombres };
-  if (bien.length === 0) return { clase: "blanqueado", titulo: "Coral blanqueado", bien, nombres };
-  return { clase: "riesgo", titulo: "Coral en riesgo", bien, nombres };
-}
-
 // pintarSaludInicio: actualiza la tarjeta grande del coral con la última lectura
 function pintarSaludInicio(ultimo) {
   const salud = saludDelCoral(ultimo);
   document.getElementById("tarjetaSalud").className = "tarjeta salud " + salud.clase;
   document.getElementById("saludTitulo").textContent = salud.titulo;
 
-  const fuera = salud.nombres.filter((n) => !salud.bien.includes(n)).map((n) => VARIABLES[n].nombre);
-  let detalle = "Todos los valores están dentro del rango sano para los corales.";
-  if (salud.clase === "riesgo") detalle = "Fuera de rango: " + fuera.join(", ") + ". Si sigue así, el coral se puede blanquear.";
-  if (salud.clase === "blanqueado") detalle = "Todos los valores están fuera de rango (" + fuera.join(", ") + "). Así el coral pierde su color.";
+  // Qué variables están en medio y cuáles en crítico
+  const enNivel = (nivel) => Object.keys(salud.niveles).filter((n) => salud.niveles[n] === nivel).map((n) => VARIABLES[n].nombre);
+  let detalle = "Todos los valores están en el rango ideal para los corales.";
+  if (salud.clase === "riesgo") detalle = "En nivel medio: " + enNivel("medio").join(", ") + ". Si empeora, el coral se puede blanquear.";
+  if (salud.clase === "blanqueado") detalle = "En nivel crítico: " + enNivel("critico").join(", ") + ". Con estos valores el coral pierde su color.";
   document.getElementById("saludDetalle").textContent = detalle;
 
-  // Un puntico verde o rojo por cada variable
+  // Un puntico verde, amarillo o rojo por cada variable
   for (const nombre in VARIABLES) {
     const item = document.getElementById("ind" + nombre[0].toUpperCase() + nombre.slice(1));
-    item.className = isNaN(ultimo[nombre]) ? "" : enRango(nombre, ultimo[nombre]) ? "bien" : "alerta";
+    item.className = salud.niveles[nombre] ?? "";
   }
 }
 
@@ -572,9 +606,9 @@ function ponerEstado(idChip, nombre, valor) {
     chip.className = "chip";
     return;
   }
-  const normal = enRango(nombre, valor);
-  chip.textContent = normal ? "Normal" : "Fuera de rango";
-  chip.className = "chip " + (normal ? "bien" : "alerta");   // el CSS les da color verde o rojo
+  const nivel = nivelDe(nombre, valor);
+  chip.textContent = NOMBRE_NIVEL[nivel];
+  chip.className = "chip " + nivel;   // el CSS les da color verde, amarillo o rojo
 }
 
 // marcarBoton: pinta el botón escogido de un grupo (Semana/Mes, Temp/pH/Turb)
@@ -702,7 +736,7 @@ function pintarTabla() {
       const celda = document.createElement("td");
       const valor = d[nombre];
       celda.textContent = isNaN(valor) ? "--" : valor.toFixed(VARIABLES[nombre].decimales);
-      if (!isNaN(valor) && !enRango(nombre, valor)) celda.className = "fuera";
+      celda.className = nivelDe(nombre, valor) ?? "";   // medio = amarillo, crítico = rojo
       fila.appendChild(celda);
     }
     cuerpo.appendChild(fila);
