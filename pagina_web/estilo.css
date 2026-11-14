@@ -560,10 +560,35 @@ button.enlace:hover {
   color: var(--texto-suave);
 }
 
+/* Botones de la franja: "Recibir alertas" y "Cambiar ID", pegados a la derecha */
+.suscribir,
 .cambiar-id {
   width: auto;
-  margin: 0 0 0 auto;               /* margin-left: auto lo empuja a la derecha */
+  margin: 0;
   padding: 8px 16px;
+  background: #ffffff;
+}
+
+.suscribir {
+  margin-left: auto;                /* margin-left: auto los empuja a la derecha */
+  color: var(--turquesa);
+  border-color: var(--turquesa);
+}
+
+/* Cuando ya está suscrito, el botón se pinta de turquesa */
+.suscribir.activa {
+  color: #ffffff;
+  background: var(--turquesa);
+}
+
+.suscribir:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+#msgSuscripcion {
+  margin: -8px 0 12px;
+  text-align: center;
 }
 
 /* Botones Semana / Mes */
@@ -930,18 +955,18 @@ button.enlace:hover {
   --c3: #c5d6db;
 }
 
-/* Sano: coral colorido (coral, naranja y morado) */
+/* Sano: coral verde vivo (tres tonos de verde) */
 .sano .coral {
-  --c1: #ff6b6b;
-  --c2: #ffa64d;
-  --c3: #b86bd8;
+  --c1: #2fae7a;
+  --c2: #5cc98a;
+  --c3: #1f8f6a;
 }
 
-/* En riesgo: los mismos colores pero pálidos */
+/* En riesgo: amarillento y pálido */
 .riesgo .coral {
-  --c1: #f7b9b3;
-  --c2: #f8d4ad;
-  --c3: #dcc3e8;
+  --c1: #e3d58c;
+  --c2: #ece2a9;
+  --c3: #d8c97a;
 }
 
 /* Blanqueado: blanco hueso, como el coral cuando se enferma */
@@ -1028,13 +1053,13 @@ button.enlace:hover {
 
 /* El color del borde y del fondo siguen el estado del coral */
 .salud.sano {
-  border-left-color: var(--coral);
-  background: linear-gradient(90deg, rgba(255, 107, 107, 0.10), var(--tarjeta) 60%);
+  border-left-color: var(--alga);
+  background: linear-gradient(90deg, rgba(47, 174, 122, 0.12), var(--tarjeta) 60%);
 }
 
 .salud.riesgo {
-  border-left-color: #f0a35e;
-  background: linear-gradient(90deg, rgba(240, 163, 94, 0.12), var(--tarjeta) 60%);
+  border-left-color: #d6b94a;
+  background: linear-gradient(90deg, rgba(214, 185, 74, 0.14), var(--tarjeta) 60%);
 }
 
 .salud.blanqueado {
@@ -1042,8 +1067,8 @@ button.enlace:hover {
   background: linear-gradient(90deg, rgba(185, 181, 170, 0.18), var(--tarjeta) 60%);
 }
 
-.salud.sano h2 { color: var(--coral); }
-.salud.riesgo h2 { color: #d9822b; }
+.salud.sano h2 { color: var(--alga); }
+.salud.riesgo h2 { color: #b8962a; }
 .salud.blanqueado h2 { color: #8a857a; }
 
 /* Las 3 variables con su puntico verde o rojo */
@@ -1086,8 +1111,8 @@ button.enlace:hover {
   vertical-align: middle;
 }
 
-.muestra.sano { background: var(--coral); }
-.muestra.riesgo { background: #f7b9b3; }
+.muestra.sano { background: var(--alga); }
+.muestra.riesgo { background: #e3d58c; }
 .muestra.blanqueado { background: #efede6; border: 1px solid #b9b5aa; }
 
 
@@ -1149,8 +1174,8 @@ button.enlace:hover {
   font-size: 16px;
 }
 
-.mini-coral.sano strong { color: var(--coral); }
-.mini-coral.riesgo strong { color: #d9822b; }
+.mini-coral.sano strong { color: var(--alga); }
+.mini-coral.riesgo strong { color: #b8962a; }
 .mini-coral.blanqueado strong { color: #8a857a; }
 
 .grafica-dia {
@@ -1291,6 +1316,7 @@ button.enlace:hover {
   }
 
   .fila-id button,
+  .suscribir,
   .cambiar-id {
     width: 100%;
     margin: 0;
@@ -1310,6 +1336,5 @@ button.enlace:hover {
     justify-content: center;
   }
 }
-
 
 
