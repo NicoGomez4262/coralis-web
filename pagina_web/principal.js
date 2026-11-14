@@ -10,6 +10,7 @@
 //   6) Leer los datos de Firebase en tiempo real
 //   7) Inicio: coral de salud, gráficas por semana o por mes, resumen y estado
 //   8) Consultas: resumen de un día, gráfica por horas, tabla y descarga
+//   10) Suscribirse a una Raspberry para recibir alertas por correo
 //   9) Extra: el ojito de la contraseña
 // ============================================================
 
@@ -27,8 +28,9 @@ import {
   updatePassword,                 // cambia la contraseña
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 // getDatabase = conectar a la base de datos, ref = "dirección" de una carpeta,
-// onValue = escuchar esa carpeta en tiempo real (usa WebSocket)
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+// get = leer una carpeta una sola vez, onValue = escucharla en tiempo real (usa WebSocket),
+// set = escribir un dato, remove = borrarlo (para las suscripciones)
+import { getDatabase, ref, get, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import Chart from "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/auto/+esm";   // librería para las gráficas
 
 
@@ -174,25 +176,35 @@ document.getElementById("btnCambiarClave").addEventListener("click", cambiarClav
 
 // ============================================================
 // 5) ESCOGER EL DISPOSITIVO POR SU ID
-// En Firebase los datos todavía no están guardados por ID, así que aquí
-// decimos a mano qué ID existe y en qué carpeta están sus datos.
-// Cuando tengan más Raspberry, se agrega una línea por cada una.
+// Cada lectura nueva de la Raspberry trae su "node_id" (ej: CORAL_1).
+// Al escribir un ID, buscamos en Firebase si hay lecturas con ese node_id:
+// si las hay, entramos; si no, decimos que ese dispositivo no existe.
 // ============================================================
-const DISPOSITIVOS = {
-  CORAL_1: "lecturas",
-};
+const CARPETA_DATOS = "lecturas";   // carpeta de Firebase donde el puente guarda las lecturas
 
 let idActual = null;        // el ID que se está viendo ahora
 let todosLosDatos = [];     // todas las lecturas del dispositivo, ordenadas por hora
 let dejarDeEscuchar = null; // función para dejar de escuchar el dispositivo anterior
 
-// escogerDispositivo: revisa el ID escrito; si existe muestra sus datos, si no, avisa
-function escogerDispositivo(evento) {
+// escogerDispositivo: busca el ID en Firebase; si existe muestra sus datos, si no, avisa
+async function escogerDispositivo(evento) {
   evento.preventDefault();   // evita que el formulario recargue la página
   const id = document.getElementById("idDispositivo").value.trim().toUpperCase();
+  mostrarMensaje("msgId", "Buscando " + id + " en la base de datos...", "#557a87");
 
-  if (!DISPOSITIVOS[id]) {
-    mostrarMensaje("msgId", "No se encontró el dispositivo \"" + id + "\". Ese nodo no existe, revisa el ID.");
+  try {
+    // get() lee la carpeta UNA vez para revisar qué IDs existen
+    const snap = await get(ref(db, CARPETA_DATOS));
+    const lista = [];
+    juntarDatos(snap.val(), lista);
+    const existe = lista.some((d) => d.nodo === id);
+
+    if (!existe) {
+      mostrarMensaje("msgId", "No se encontró el dispositivo \"" + id + "\". Ese nodo no existe, revisa el ID.");
+      return;
+    }
+  } catch (error) {
+    mostrarMensaje("msgId", "No se pudo revisar la base de datos (" + error.code + ")");
     return;
   }
 
@@ -201,7 +213,8 @@ function escogerDispositivo(evento) {
   document.getElementById("resId").textContent = id;
   document.getElementById("formId").hidden = true;       // escondemos el buscador
   document.getElementById("panelDatos").hidden = false;  // mostramos el panel
-  escucharDatos(DISPOSITIVOS[id]);
+  escucharDatos(CARPETA_DATOS);
+  revisarSuscripcion();
 }
 
 // cambiarId: vuelve a mostrar el buscador para escribir otro ID
@@ -215,6 +228,7 @@ function cambiarId() {
   document.getElementById("estadoDatos").textContent = "Escribe el ID del dispositivo para ver sus datos.";
   document.getElementById("fechaConsulta").value = "";
   document.getElementById("resultadoDia").hidden = true;
+  mostrarMensaje("msgSuscripcion", "");
 }
 
 document.getElementById("formId").addEventListener("submit", escogerDispositivo);
@@ -241,7 +255,14 @@ function leerDato(obj) {
   if (hora === undefined || (temp === undefined && ph === undefined && turb === undefined)) return null;
   // Si la Raspberry manda el timestamp en segundos (ej: 1762970000), lo pasamos a milisegundos
   if (typeof hora === "number" && hora < 1e12) hora = hora * 1000;
-  return { hora: new Date(hora), temp: Number(temp), ph: Number(ph), turb: Number(turb), nodo: d.node_id };
+  return {
+    hora: new Date(hora),
+    temp: Number(temp),
+    ph: Number(ph),
+    turb: Number(turb),
+    nodo: d.node_id ? String(d.node_id).toUpperCase() : null,   // ID de la Raspberry (solo en el JSON nuevo)
+    secuencia: d.sequence,                                        // número de envío (solo en el JSON nuevo)
+  };
 }
 
 // juntarDatos: recorre todas las subcarpetas (función recursiva: se llama a sí misma)
@@ -266,8 +287,8 @@ function escucharDatos(carpeta) {
       const lista = [];
       juntarDatos(snap.val(), lista);
 
-      // Si el dato trae node_id, dejamos solo los de este dispositivo
-      const delId = lista.filter((d) => !d.nodo || String(d.nodo).toUpperCase() === idActual);
+      // Dejamos solo las lecturas de este dispositivo (las viejas sin node_id no entran)
+      const delId = lista.filter((d) => d.nodo === idActual);
 
       // Quitamos repetidos (misma hora) y ordenamos de más viejo a más nuevo
       const unicos = new Map(delId.map((d) => [d.hora.getTime(), d]));
@@ -655,6 +676,10 @@ function pintarTabla() {
     celdaHora.textContent = horaCompleta(d.hora);
     fila.appendChild(celdaHora);
 
+    const celdaSecuencia = document.createElement("td");
+    celdaSecuencia.textContent = d.secuencia ?? "--";
+    fila.appendChild(celdaSecuencia);
+
     for (const nombre in VARIABLES) {
       const celda = document.createElement("td");
       const valor = d[nombre];
@@ -679,8 +704,8 @@ function moverDia(direccion) {
 
 // descargarCSV: baja un archivo .csv (se abre en Excel) con las lecturas del día
 function descargarCSV() {
-  const filas = [["timestamp", "fecha_hora", "temperatura_c", "ph", "turbidez_ntu"]];
-  lecturasDelDia.forEach((d) => filas.push([d.hora.toISOString(), horaCompleta(d.hora), d.temp, d.ph, d.turb]));
+  const filas = [["timestamp", "fecha_hora", "secuencia", "temperatura_c", "ph", "turbidez_ntu"]];
+  lecturasDelDia.forEach((d) => filas.push([d.hora.toISOString(), horaCompleta(d.hora), d.secuencia ?? "", d.temp, d.ph, d.turb]));
   const texto = filas.map((f) => f.map((x) => '"' + x + '"').join(",")).join("\n");
 
   const enlace = document.createElement("a");
@@ -735,3 +760,65 @@ document.querySelectorAll('input[type="password"]').forEach((campo) => {
     ojo.title = oculta ? "Ocultar contraseña" : "Mostrar contraseña";
   });
 });
+
+
+// ============================================================
+// 10) SUSCRIBIRSE A UNA RASPBERRY (ALERTAS POR CORREO)
+// La página solo guarda quién está suscrito en Firebase:
+//   suscripciones/CORAL_1/<uid> = { correo, desde }
+// El que manda los correos es el puente (Python), que revisa cada lectura
+// nueva y, si el coral cambia de estado, les escribe a los suscritos.
+// ============================================================
+let suscrito = false;   // si el usuario está suscrito al dispositivo que está viendo
+
+// rutaSuscripcion: dónde se guarda la suscripción del usuario a este dispositivo
+function rutaSuscripcion() {
+  return "suscripciones/" + idActual + "/" + auth.currentUser.uid;
+}
+
+// pintarBotonSuscripcion: cambia el texto y el color del botón según el estado
+function pintarBotonSuscripcion() {
+  const boton = document.getElementById("btnSuscribir");
+  boton.textContent = suscrito ? "🔕 Dejar de recibir alertas" : "🔔 Recibir alertas por correo";
+  boton.classList.toggle("activa", suscrito);
+  boton.title = suscrito
+    ? "Te llega un correo a " + auth.currentUser.email + " cuando el coral cambie de estado"
+    : "Suscríbete para que te llegue un correo cuando el coral cambie de estado";
+}
+
+// revisarSuscripcion: al entrar a un dispositivo, mira si el usuario ya estaba suscrito
+async function revisarSuscripcion() {
+  try {
+    const snap = await get(ref(db, rutaSuscripcion()));
+    suscrito = snap.exists();
+  } catch (error) {
+    suscrito = false;
+  }
+  pintarBotonSuscripcion();
+}
+
+// cambiarSuscripcion: suscribe o quita la suscripción (botón de la franja de resumen)
+async function cambiarSuscripcion() {
+  const boton = document.getElementById("btnSuscribir");
+  boton.disabled = true;   // evita doble clic mientras Firebase responde
+  try {
+    if (suscrito) {
+      await remove(ref(db, rutaSuscripcion()));
+      suscrito = false;
+      mostrarMensaje("msgSuscripcion", "Listo, ya no te llegarán alertas de " + idActual + ".", "#557a87");
+    } else {
+      await set(ref(db, rutaSuscripcion()), {
+        correo: auth.currentUser.email,
+        desde: new Date().toISOString(),
+      });
+      suscrito = true;
+      mostrarMensaje("msgSuscripcion", "Te llegará un correo a " + auth.currentUser.email + " cuando el coral de " + idActual + " cambie de estado.", "#2fae7a");
+    }
+  } catch (error) {
+    mostrarMensaje("msgSuscripcion", "No se pudo guardar la suscripción (" + error.code + ")");
+  }
+  boton.disabled = false;
+  pintarBotonSuscripcion();
+}
+
+document.getElementById("btnSuscribir").addEventListener("click", cambiarSuscripcion);
