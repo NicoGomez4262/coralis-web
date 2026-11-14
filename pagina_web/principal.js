@@ -180,11 +180,13 @@ document.getElementById("btnCambiarClave").addEventListener("click", cambiarClav
 // Al escribir un ID, buscamos en Firebase si hay lecturas con ese node_id:
 // si las hay, entramos; si no, decimos que ese dispositivo no existe.
 // ============================================================
-const CARPETA_DATOS = "lecturas";   // carpeta de Firebase donde el puente guarda las lecturas
+// Carpetas de Firebase donde pueden estar las lecturas:
+// "mediciones" = donde las guarda el webhook de TTN, "lecturas" = la del puente
+const CARPETAS_DATOS = ["mediciones", "lecturas"];
 
 let idActual = null;        // el ID que se está viendo ahora
 let todosLosDatos = [];     // todas las lecturas del dispositivo, ordenadas por hora
-let dejarDeEscuchar = null; // función para dejar de escuchar el dispositivo anterior
+let dejarDeEscuchar = [];   // funciones para dejar de escuchar el dispositivo anterior
 
 // escogerDispositivo: busca el ID en Firebase; si existe muestra sus datos, si no, avisa
 async function escogerDispositivo(evento) {
@@ -193,10 +195,12 @@ async function escogerDispositivo(evento) {
   mostrarMensaje("msgId", "Buscando " + id + " en la base de datos...", "#557a87");
 
   try {
-    // get() lee la carpeta UNA vez para revisar qué IDs existen
-    const snap = await get(ref(db, CARPETA_DATOS));
+    // get() lee cada carpeta UNA vez para revisar qué IDs existen
     const lista = [];
-    juntarDatos(snap.val(), lista);
+    for (const carpeta of CARPETAS_DATOS) {
+      const snap = await get(ref(db, carpeta));
+      juntarDatos(snap.val(), lista);
+    }
     const existe = lista.some((d) => d.nodo === id);
 
     if (!existe) {
@@ -213,13 +217,14 @@ async function escogerDispositivo(evento) {
   document.getElementById("resId").textContent = id;
   document.getElementById("formId").hidden = true;       // escondemos el buscador
   document.getElementById("panelDatos").hidden = false;  // mostramos el panel
-  escucharDatos(CARPETA_DATOS);
+  escucharDatos();
   revisarSuscripcion();
 }
 
 // cambiarId: vuelve a mostrar el buscador para escribir otro ID
 function cambiarId() {
-  if (dejarDeEscuchar) dejarDeEscuchar();   // dejamos de leer el dispositivo anterior
+  dejarDeEscuchar.forEach((dejar) => dejar());   // dejamos de leer el dispositivo anterior
+  dejarDeEscuchar = [];
   idActual = null;
   todosLosDatos = [];
   document.getElementById("panelDatos").hidden = true;
@@ -274,47 +279,60 @@ function juntarDatos(nodo, lista) {
   else Object.values(nodo).forEach((hijo) => juntarDatos(hijo, lista)); // es una carpeta: entramos
 }
 
-// escucharDatos: escucha la carpeta del dispositivo; cada vez que llega
+// escucharDatos: escucha las carpetas de datos; cada vez que llega
 // un dato nuevo se actualizan Inicio y Consultas solos
-function escucharDatos(carpeta) {
-  const estado = document.getElementById("estadoDatos");
-  estado.textContent = "Cargando datos...";
+let listasPorCarpeta = {};   // lo último que llegó de cada carpeta
 
-  // onValue devuelve una función que sirve para dejar de escuchar
-  dejarDeEscuchar = onValue(
-    ref(db, carpeta),
-    (snap) => {
-      const lista = [];
-      juntarDatos(snap.val(), lista);
+function escucharDatos() {
+  document.getElementById("estadoDatos").textContent = "Cargando datos...";
+  listasPorCarpeta = {};
 
-      // Dejamos solo las lecturas de este dispositivo (las viejas sin node_id no entran)
-      const delId = lista.filter((d) => d.nodo === idActual);
-
-      // Quitamos repetidos (misma hora) y ordenamos de más viejo a más nuevo
-      const unicos = new Map(delId.map((d) => [d.hora.getTime(), d]));
-      todosLosDatos = [...unicos.values()].sort((a, b) => a.hora - b.hora);
-
-      if (todosLosDatos.length === 0) {
-        estado.textContent = "El dispositivo " + idActual + " todavía no tiene datos.";
-        return;
+  for (const carpeta of CARPETAS_DATOS) {
+    // onValue devuelve una función que sirve para dejar de escuchar
+    const dejar = onValue(
+      ref(db, carpeta),
+      (snap) => {
+        const lista = [];
+        juntarDatos(snap.val(), lista);
+        listasPorCarpeta[carpeta] = lista;
+        procesarDatos();
+      },
+      (error) => {
+        // Se ejecuta si las reglas no dejan leer (por ejemplo, sin sesión)
+        document.getElementById("estadoDatos").textContent = "No se pudieron leer los datos (" + error.code + ")";
       }
+    );
+    dejarDeEscuchar.push(dejar);
+  }
+}
 
-      const ultimo = todosLosDatos[todosLosDatos.length - 1];
-      estado.textContent = "Mostrando los datos de " + idActual + ". Se actualiza solo cuando llega un dato nuevo.";
-      document.getElementById("resUltima").textContent = horaCompleta(ultimo.hora);
+// procesarDatos: junta lo de todas las carpetas y actualiza la página
+function procesarDatos() {
+  const estado = document.getElementById("estadoDatos");
+  const lista = Object.values(listasPorCarpeta).flat();
 
-      actualizarInicio();
+  // Dejamos solo las lecturas de este dispositivo (las viejas sin node_id no entran)
+  const delId = lista.filter((d) => d.nodo === idActual);
 
-      // En Consultas: la primera vez se muestra el día de la última lectura;
-      // después se vuelve a mostrar el día que se estaba viendo (con los datos nuevos)
-      const campoFecha = document.getElementById("fechaConsulta");
-      mostrarDia(campoFecha.value || claveDia(ultimo.hora));
-    },
-    (error) => {
-      // Se ejecuta si las reglas no dejan leer (por ejemplo, sin sesión)
-      estado.textContent = "No se pudieron leer los datos (" + error.code + ")";
-    }
-  );
+  // Quitamos repetidos (misma hora) y ordenamos de más viejo a más nuevo
+  const unicos = new Map(delId.map((d) => [d.hora.getTime(), d]));
+  todosLosDatos = [...unicos.values()].sort((a, b) => a.hora - b.hora);
+
+  if (todosLosDatos.length === 0) {
+    estado.textContent = "El dispositivo " + idActual + " todavía no tiene datos.";
+    return;
+  }
+
+  const ultimo = todosLosDatos[todosLosDatos.length - 1];
+  estado.textContent = "Mostrando los datos de " + idActual + ". Se actualiza solo cuando llega un dato nuevo.";
+  document.getElementById("resUltima").textContent = horaCompleta(ultimo.hora);
+
+  actualizarInicio();
+
+  // En Consultas: la primera vez se muestra el día de la última lectura;
+  // después se vuelve a mostrar el día que se estaba viendo (con los datos nuevos)
+  const campoFecha = document.getElementById("fechaConsulta");
+  mostrarDia(campoFecha.value || claveDia(ultimo.hora));
 }
 
 
