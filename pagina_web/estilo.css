@@ -37,7 +37,8 @@
   --coral: #ff6b6b;           /* temperatura / botón principal */
   --turquesa: #1fa8b0;        /* pH / enlaces */
   --alga: #2fae7a;            /* turbidez / verde naturaleza */
-  --error: #e5484d;
+  --error: #e5484d;           /* crítico */
+  --medio: #c98a0b;           /* nivel medio (amarillo oscuro para que se lea) */
   --mar: #0e7c8c;             /* azul verdoso de la barra lateral */
   --mar-oscuro: #0a5a73;
   --sombra: 0 10px 30px rgba(13, 59, 76, 0.10);   /* sombra suave */
@@ -688,13 +689,20 @@ button.enlace:hover {
   display: none;                    /* si no tiene texto, no se ve */
 }
 
-.chip.bien {
+/* Ideal = verde, Medio = amarillo, Crítico = rojo */
+.chip.ideal {
   color: var(--alga);
   background: rgba(47, 174, 122, 0.12);
   border: 1px solid var(--alga);
 }
 
-.chip.alerta {
+.chip.medio {
+  color: var(--medio);
+  background: rgba(214, 160, 30, 0.12);
+  border: 1px solid var(--medio);
+}
+
+.chip.critico {
   color: var(--error);
   background: rgba(229, 72, 77, 0.10);
   border: 1px solid var(--error);
@@ -1094,8 +1102,9 @@ button.enlace:hover {
   color: var(--borde);
 }
 
-.indicadores li.bien::before { color: var(--alga); }
-.indicadores li.alerta::before { color: var(--error); }
+.indicadores li.ideal::before { color: var(--alga); }
+.indicadores li.medio::before { color: #e0b030; }
+.indicadores li.critico::before { color: var(--error); }
 
 /* Leyenda de colores */
 .leyenda {
@@ -1211,8 +1220,13 @@ button.enlace:hover {
   padding: 8px 16px;
 }
 
-/* Valor fuera de rango en la tabla */
-.tabla td.fuera {
+/* Valores en la tabla: medio en amarillo, crítico en rojo */
+.tabla td.medio {
+  color: var(--medio);
+  font-weight: 700;
+}
+
+.tabla td.critico {
   color: var(--error);
   font-weight: 700;
 }
