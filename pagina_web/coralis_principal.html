@@ -72,8 +72,10 @@
             <span class="etiqueta">Lecturas en el periodo</span>
             <strong id="resCantidad">--</strong>
           </div>
+          <button type="button" class="secundario suscribir" id="btnSuscribir">🔔 Recibir alertas por correo</button>
           <button type="button" class="secundario cambiar-id" id="btnCambiarId">Cambiar ID</button>
         </div>
+        <p class="mensaje" id="msgSuscripcion"></p>
 
         <!-- Tarjeta grande del coral: cambia de color según los datos -->
         <div class="tarjeta salud" id="tarjetaSalud">
@@ -245,6 +247,7 @@
             <thead>
               <tr>
                 <th>Hora de la toma (timestamp)</th>
+                <th>Secuencia</th>
                 <th>Temperatura (°C)</th>
                 <th>pH</th>
                 <th>Turbidez (NTU)</th>
