@@ -377,8 +377,12 @@ const VARIABLES = {
 
 // Colores de las líneas de las gráficas y de sus letras/rayitas (tema claro)
 const COLORES = { temp: "#ff6b6b", ph: "#1fa8b0", turb: "#2fae7a" };
-const COLOR_LETRAS = "#557a87";
-const COLOR_RAYAS = "#e1eef1";
+const COLOR_LETRAS = "#4b6f7c";
+const COLOR_RAYAS = "#e2eff1";
+
+// Letra de las gráficas: la misma de la página (Figtree, ver estilo.css)
+Chart.defaults.font.family = '"Figtree", "Segoe UI", system-ui, sans-serif';
+Chart.defaults.color = COLOR_LETRAS;
 
 
 // ************************************************************
@@ -441,29 +445,67 @@ function saludDelCoral(valores) {
 
 
 // ---------- EL CORAL QUE CAMBIA DE COLOR ----------
-// Dibujo del coral (SVG). Cada parte usa un color del CSS (--c1, --c2, --c3),
-// así el CSS lo pinta colorido (sano), pálido (en riesgo) o blanco (blanqueado).
+// Dibujo del coral (SVG): abanico de mar atrás, coral ramificado con pólipos,
+// esponjas de tubo y coral cerebro adelante, sobre una roca.
+// No tiene colores fijos: el CSS (parte 16 de estilo.css) lo pinta con la
+// variable --blanqueo (0 = vivo, 1 = blanco hueso) según la clase
+// sano / riesgo / blanqueado que pone pintarSaludInicio y mostrarDia.
 const DIBUJO_CORAL = `
-<svg viewBox="0 0 200 200" aria-hidden="true">
-  <circle class="burbuja b1" cx="40" cy="150" r="5"/>
-  <circle class="burbuja b2" cx="160" cy="140" r="4"/>
-  <circle class="burbuja b3" cx="150" cy="80" r="3"/>
+<svg viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+  <g class="abanico">
+    <path class="velo" d="M62 174 C38 152 20 120 28 92 C42 78 72 82 88 100 C90 132 78 158 62 174 Z"/>
+    <path d="M62 174 C56 152 44 130 31 108"/>
+    <path d="M62 174 C60 148 56 122 52 94"/>
+    <path d="M62 174 C64 150 70 128 79 106"/>
+    <path d="M46 136 C38 128 30 124 23 115"/>
+    <path d="M55 124 C48 114 46 104 41 91"/>
+    <path d="M68 134 C76 126 82 117 87 104"/>
+    <path class="malla" d="M33 110 C44 102 57 98 72 101"/>
+    <path class="malla" d="M39 132 C50 123 63 119 78 121"/>
+    <path class="malla" d="M48 151 C56 145 64 143 73 145"/>
+  </g>
   <g class="rama r1">
-    <path d="M100 190 C98 160 92 140 70 120 C58 110 52 95 56 78" />
-    <path d="M70 120 C55 118 40 108 36 92" />
-    <path d="M84 134 C90 115 104 104 104 84" />
+    <path d="M104 176 C99 160 91 149 79 139"/>
+    <path class="fina" d="M79 139 C71 131 68 119 70 104"/>
+    <path class="fina" d="M79 139 C69 139 60 133 55 121"/>
+    <circle class="polipo" cx="70" cy="104" r="5"/>
+    <circle class="polipo" cx="55" cy="121" r="5"/>
   </g>
   <g class="rama r2">
-    <path d="M100 190 C104 160 112 140 134 124 C148 114 152 98 148 82" />
-    <path d="M134 124 C150 124 162 114 166 98" />
-    <path d="M118 140 C114 120 120 104 128 92" />
+    <path d="M104 176 C110 160 120 150 132 141"/>
+    <path class="fina" d="M132 141 C140 133 143 121 141 106"/>
+    <path class="fina" d="M132 141 C143 141 151 134 156 122"/>
+    <path class="fina" d="M118 153 C121 141 120 131 125 120"/>
+    <circle class="polipo" cx="141" cy="106" r="5"/>
+    <circle class="polipo" cx="156" cy="122" r="5"/>
+    <circle class="polipo" cx="125" cy="120" r="4.5"/>
   </g>
   <g class="rama r3">
-    <path d="M100 190 C100 150 100 110 100 60" />
-    <path d="M100 110 C88 100 84 86 86 70" />
-    <path d="M100 96 C112 88 116 74 114 60" />
+    <path d="M104 176 C103 152 101 129 104 100"/>
+    <path class="fina" d="M104 100 C105 90 107 82 110 73"/>
+    <path class="fina" d="M103 133 C93 125 88 113 90 98"/>
+    <path class="fina" d="M104 115 C114 107 119 97 118 84"/>
+    <circle class="polipo" cx="110" cy="73" r="5.5"/>
+    <circle class="polipo" cx="90" cy="98" r="5"/>
+    <circle class="polipo" cx="118" cy="84" r="5"/>
   </g>
-  <ellipse class="roca" cx="100" cy="192" rx="62" ry="10"/>
+  <path class="roca" d="M22 194 C26 181 43 174 62 176 C78 168 98 170 113 176 C129 168 157 168 171 178 C181 182 186 188 184 194 Z"/>
+  <path class="roca-luz" d="M40 180 C50 176 60 176 66 178 M118 174 C130 170 146 170 156 173"/>
+  <g class="tubos">
+    <rect x="33" y="148" width="13" height="42" rx="6.5"/>
+    <rect x="47" y="160" width="11" height="30" rx="5.5"/>
+    <ellipse class="boca" cx="39.5" cy="153.5" rx="3.8" ry="2.1"/>
+    <ellipse class="boca" cx="52.5" cy="164.5" rx="3.2" ry="1.8"/>
+  </g>
+  <g class="cerebro">
+    <path class="cupula" d="M128 188 C128 167 144 157 159 158 C175 159 185 171 183 188 Z"/>
+    <path class="surco" d="M135 181 C139 174 144 178 148 171 C152 165 158 170 162 164 C165 160 170 163 173 160"/>
+    <path class="surco" d="M140 188 C145 182 151 186 156 179 C161 173 168 177 173 170 C176 166 179 169 181 166"/>
+    <path class="surco" d="M154 188 C159 184 165 187 170 182 C174 178 178 181 181 178"/>
+  </g>
+  <circle class="burbuja b1" cx="150" cy="86" r="4"/>
+  <circle class="burbuja b2" cx="58" cy="72" r="3"/>
+  <circle class="burbuja b3" cx="170" cy="120" r="2.5"/>
 </svg>`;
 
 // Se pone el dibujo en todos los lugares que tengan class="coral"
@@ -491,9 +533,59 @@ function pintarSaludInicio(ultimo) {
 
 
 // ---------- GRÁFICAS ----------
+// (Solo visual: estas funciones cambian cómo se VEN las gráficas, no los datos.)
+
+// degradado: relleno debajo de la línea que va del color a transparente
+function degradado(color) {
+  return (contexto) => {
+    const area = contexto.chart.chartArea;
+    if (!area) return color + "22";   // la primera vez todavía no hay área
+    const relleno = contexto.chart.ctx.createLinearGradient(0, area.top, 0, area.bottom);
+    relleno.addColorStop(0, color + "40");
+    relleno.addColorStop(0.8, color + "00");
+    return relleno;
+  };
+}
+
+// franjaIdeal: dibuja detrás de la línea una franja verde con el rango ideal
+// (sale de RANGOS), para ver de un vistazo cuándo un valor se sale del umbral.
+const franjaIdeal = {
+  id: "franjaIdeal",
+  // Antes de calcular los ejes: que el eje Y siempre alcance a mostrar la franja
+  beforeUpdate(chart) {
+    const r = chart.data.datasets[0].rango;
+    if (!r) return;
+    const margen = (r.idealMax - r.idealMin) * 0.5;
+    chart.options.scales.y.suggestedMin = Math.max(0, r.idealMin - margen);
+    chart.options.scales.y.suggestedMax = r.idealMax + margen;
+  },
+  beforeDatasetsDraw(chart) {
+    const r = chart.data.datasets[0].rango;
+    if (!r) return;
+    const { ctx, chartArea: area, scales } = chart;
+    const arriba = Math.max(scales.y.getPixelForValue(r.idealMax), area.top);
+    const abajo = Math.min(scales.y.getPixelForValue(r.idealMin), area.bottom);
+    if (abajo <= arriba) return;
+    ctx.save();
+    ctx.fillStyle = "rgba(47, 174, 122, 0.11)";
+    ctx.fillRect(area.left, arriba, area.right - area.left, abajo - arriba);
+    ctx.strokeStyle = "rgba(47, 174, 122, 0.55)";
+    ctx.setLineDash([4, 4]);
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(area.left, arriba);
+    ctx.lineTo(area.right, arriba);
+    ctx.moveTo(area.left, abajo);
+    ctx.lineTo(area.right, abajo);
+    ctx.stroke();
+    ctx.restore();
+  },
+};
+
 // crearGrafica: crea una gráfica de línea vacía en el <canvas> indicado y la devuelve.
+// rango = el rango ideal de la variable (para la franja verde)
 // proporcion = cuántas veces más ancha que alta (2 si no se dice nada)
-function crearGrafica(idCanvas, nombre, color, proporcion = 2) {
+function crearGrafica(idCanvas, nombre, color, rango, proporcion = 2) {
   return new Chart(document.getElementById(idCanvas), {
     type: "line",
     data: {
@@ -501,22 +593,48 @@ function crearGrafica(idCanvas, nombre, color, proporcion = 2) {
       datasets: [{
         label: nombre,
         data: [],                        // eje Y; se llena después
+        rango: rango,                    // para la franja del rango ideal
         borderColor: color,
-        backgroundColor: color + "26",   // el mismo color pero transparente (relleno)
+        backgroundColor: degradado(color),
         fill: true,
-        tension: 0.3,                    // línea un poco curva
+        tension: 0.35,                   // línea un poco curva
         pointRadius: 3,
+        pointHoverRadius: 6,
         pointBackgroundColor: color,
+        pointBorderColor: "#ffffff",
+        pointBorderWidth: 1.5,
         borderWidth: 2.5,
         spanGaps: true,                  // si un día no tiene datos, une los puntos de al lado
       }],
     },
+    plugins: [franjaIdeal],
     options: {
       aspectRatio: proporcion,
-      plugins: { legend: { display: false } },
+      interaction: { mode: "index", intersect: false },   // el recuadro sale al pasar cerca
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: "#062a3a",
+          titleColor: "#8fe3dd",
+          bodyColor: "#ffffff",
+          titleFont: { weight: "600" },
+          bodyFont: { weight: "700", size: 13 },
+          padding: 10,
+          cornerRadius: 10,
+          displayColors: false,
+        },
+      },
       scales: {
-        x: { ticks: { color: COLOR_LETRAS, maxTicksLimit: 8 }, grid: { color: COLOR_RAYAS } },
-        y: { ticks: { color: COLOR_LETRAS }, grid: { color: COLOR_RAYAS } },
+        x: {
+          ticks: { color: COLOR_LETRAS, maxTicksLimit: 8 },
+          grid: { display: false },
+          border: { color: COLOR_RAYAS },
+        },
+        y: {
+          ticks: { color: COLOR_LETRAS, maxTicksLimit: 5 },
+          grid: { color: COLOR_RAYAS },
+          border: { display: false },
+        },
       },
     },
   });
@@ -524,9 +642,9 @@ function crearGrafica(idCanvas, nombre, color, proporcion = 2) {
 
 // Las 3 gráficas de Inicio se crean una sola vez y luego solo se les cambian los datos
 const graficas = {
-  temp: crearGrafica("graficaTemp", "Temperatura (°C)", COLORES.temp),
-  ph: crearGrafica("graficaPh", "pH", COLORES.ph),
-  turb: crearGrafica("graficaTurb", "Turbidez (NTU)", COLORES.turb),
+  temp: crearGrafica("graficaTemp", "Temperatura (°C)", COLORES.temp, RANGOS.temp),
+  ph: crearGrafica("graficaPh", "pH", COLORES.ph, RANGOS.ph),
+  turb: crearGrafica("graficaTurb", "Turbidez (NTU)", COLORES.turb, RANGOS.turb),
 };
 
 // actualizarInicio: arma los días del periodo, saca el promedio de cada día
@@ -637,7 +755,7 @@ let variableDia = "temp";   // qué variable se ve en la gráfica del día
 let lecturasDelDia = [];    // las lecturas del día que se está viendo
 
 // La gráfica del día se crea una sola vez
-const graficaDia = crearGrafica("graficaDia", "Temperatura (°C)", COLORES.temp, 3.5);   // más ancha que alta
+const graficaDia = crearGrafica("graficaDia", "Temperatura (°C)", COLORES.temp, RANGOS.temp, 3.5);   // más ancha que alta
 
 // diasConDatos: lista de días (AAAA-MM-DD) que tienen al menos una lectura
 function diasConDatos() {
@@ -712,7 +830,9 @@ function pintarGraficaDia() {
   dataset.label = v.nombre;
   dataset.borderColor = COLORES[variableDia];
   dataset.pointBackgroundColor = COLORES[variableDia];
-  dataset.backgroundColor = COLORES[variableDia] + "26";
+  dataset.backgroundColor = degradado(COLORES[variableDia]);
+  dataset.rango = RANGOS[variableDia];   // la franja del rango ideal de esa variable
+  dataset.pointRadius = lecturasDelDia.length > 60 ? 0 : 3;   // con muchas lecturas, solo la línea
   graficaDia.update();
 }
 

@@ -1,68 +1,114 @@
 /* ============================================================
    estilo.css — Coralis
-   Un solo archivo de estilos para las DOS páginas (login y principal).
-   Tema claro tipo "agua de mar": fondo aguamarina clarito, tarjetas
-   blancas y colores vivos (coral, turquesa y verde alga).
+   Un solo archivo de estilos para las DOS páginas:
+   - coralis_pag.html        (portada + login)   → <body class="pagina-portada">
+   - coralis_principal.html  (panel)             → <body class="pagina-panel">
 
-   Recordatorio rápido:
-   - .nombre  = clase (en el HTML: class="nombre")
-   - #nombre  = id    (en el HTML: id="nombre")
-   - etiqueta = todas las de ese tipo (button, input, label...)
-   - padding = espacio por dentro, margin = espacio por fuera
+   Idea del diseño: el agua. Arriba (portada, barra lateral, acuario del
+   coral) es mar profundo; el contenido de lectura va sobre "espuma",
+   un aguamarina casi blanco. Los colores de siempre de Coralis
+   (coral, turquesa y alga) son los acentos.
 
    Partes:
-    1) Colores               7) Barra lateral
-    2) Base                  8) Contenido y tarjetas
-    3) Formularios           9) Inicio: ID, resumen, periodo, gráficas
-    4) Botones              10) Consultas: tabla del día
-    5) Login                11) Sobre nosotros
-    6) Ventanas emergentes  12) Mi cuenta
-                            13) Coral de salud
-                            14) Consultas: resumen del día
-                            15) Animaciones
-                            16) Celular
+    1) Fuentes y colores          10) Panel: barra lateral
+    2) Base                       11) Panel: contenido y tarjetas
+    3) Formularios                12) Panel: inicio y gráficas
+    4) Botones                    13) Panel: acuario (salud del coral)
+    5) Portada: barra y héroe     14) Panel: consultas y tabla
+    6) Portada: qué mide          15) Panel: cuenta y nosotros
+    7) Portada: el coral (demo)   16) EL CORAL (dibujo que se blanquea)
+    8) Portada: cómo funciona,    17) Animaciones
+       quiénes somos y pie        18) Celular
+    9) Ventanas emergentes        19) Menos movimiento
    ============================================================ */
 
 
-/* ---------- 1) COLORES (cámbialos aquí y cambian en toda la página) ---------- */
+/* ---------- 1) FUENTES Y COLORES ---------- */
+/* Las fuentes están en la carpeta fuentes/ (licencia OFL, libres) */
+@font-face {
+  font-family: "Unbounded";
+  src: url("fuentes/unbounded.woff2") format("woff2");
+  font-weight: 200 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Figtree";
+  src: url("fuentes/figtree.woff2") format("woff2");
+  font-weight: 300 900;
+  font-display: swap;
+}
+
 /* :root guarda variables; se usan así: color: var(--coral); */
 :root {
-  --fondo: #e6f6f8;           /* aguamarina muy clarito */
-  --fondo-claro: #ffffff;     /* ventanas emergentes */
-  --fondo-oscuro: #f1f9fa;    /* campos y cajitas (un poco más oscuro que blanco) */
-  --tarjeta: rgba(255, 255, 255, 0.88);   /* fondo de las tarjetas */
-  --borde: #cde6eb;
-  --texto: #0d3b4c;           /* azul marino para leer bien */
-  --texto-suave: #557a87;
-  --coral: #ff6b6b;           /* temperatura / botón principal */
-  --turquesa: #1fa8b0;        /* pH / enlaces */
-  --alga: #2fae7a;            /* turbidez / verde naturaleza */
-  --error: #e5484d;           /* crítico */
-  --medio: #c98a0b;           /* nivel medio (amarillo oscuro para que se lea) */
-  --mar: #0e7c8c;             /* azul verdoso de la barra lateral */
+  /* Mar profundo (de lo más oscuro a lo más claro) */
+  --abismo: #062a3a;
+  --abismo-2: #0a3d52;
   --mar-oscuro: #0a5a73;
-  --sombra: 0 10px 30px rgba(13, 59, 76, 0.10);   /* sombra suave */
+  --mar: #0e7c8c;
+
+  /* Los colores de Coralis */
+  --coral: #ff6b6b;
+  --coral-texto: #c2363e;       /* coral oscuro para letras pequeñas sobre claro */
+  --turquesa: #1fa8b0;
+  --turquesa-claro: #8fe3dd;
+  --alga: #2fae7a;
+  --alga-texto: #1b7d55;
+  --alga-claro: #8ef0c0;
+
+  /* Niveles (ideal / medio / crítico) */
+  --ideal: var(--alga);
+  --medio: #c98a0b;
+  --medio-claro: #f2c14e;
+  --medio-texto: #8a5d00;
+  --error: #e5484d;
+
+  /* Fondos y texto de las zonas claras */
+  --espuma: #eef8f8;
+  --blanco: #ffffff;
+  --borde: #cfe5e8;
+  --texto: #0d3b4c;
+  --texto-suave: #4b6f7c;
+
+  /* Tipografía */
+  --letra-titulo: "Unbounded", "Segoe UI", system-ui, sans-serif;
+  --letra: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+
+  /* Agua para las ventanas (portada, acuario del panel) */
+  --agua: radial-gradient(120% 90% at 50% 0%, #34c2c6 0%, #13909c 30%, #0a5a73 62%, #073f55 100%);
 }
 
 
 /* ---------- 2) BASE ---------- */
-/* border-box hace que el ancho incluya el padding y el borde */
 * {
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;            /* los enlaces #seccion bajan suave */
+}
+
 body {
   margin: 0;
-  min-height: 100vh;                /* 100vh = alto completo de la pantalla */
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  font-family: var(--letra);
+  font-size: 17px;
+  line-height: 1.6;
   color: var(--texto);
-  /* Fondo: agua clarita con manchas de luz turquesa, coral y verde */
-  background:
-    radial-gradient(ellipse at 85% 0%, rgba(31, 168, 176, 0.22), transparent 55%),
-    radial-gradient(ellipse at 10% 100%, rgba(47, 174, 122, 0.16), transparent 50%),
-    radial-gradient(ellipse at 100% 90%, rgba(255, 107, 107, 0.10), transparent 45%),
-    linear-gradient(180deg, #d4f1f4 0%, var(--fondo) 50%, #f6fcfd 100%);
-  background-attachment: fixed;     /* el fondo no se mueve al bajar */
+  background: var(--espuma);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  line-height: 1.2;
+}
+
+img, svg {
+  display: block;
+}
+
+a {
+  color: inherit;
 }
 
 /* Lo que tiene el atributo hidden no se ve (secciones y popups ocultos) */
@@ -70,68 +116,88 @@ body {
   display: none !important;
 }
 
+/* Oculto a la vista pero lo lee el lector de pantalla */
+.solo-lector {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Borde visible cuando se navega con teclado */
+:focus-visible {
+  outline: 3px solid var(--turquesa);
+  outline-offset: 2px;
+}
+
 
 /* ---------- 3) FORMULARIOS ---------- */
-/* Los campos del formulario quedan uno debajo del otro */
 form {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 label {
   font-size: 14px;
+  font-weight: 600;
   color: var(--texto-suave);
-  margin-top: 6px;
+  margin-top: 8px;
 }
 
 input {
   width: 100%;
   padding: 12px 14px;
-  font-size: 15px;
+  font: inherit;
+  font-size: 16px;
   color: var(--texto);
-  background: var(--fondo-oscuro);
+  background: var(--blanco);
   border: 1px solid var(--borde);
-  border-radius: 10px;
-  outline: none;                    /* quita el borde azul por defecto del navegador */
+  border-radius: 12px;
+  outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 input::placeholder {
-  color: #94b3bc;
+  color: #8aa9b2;
 }
 
-/* :focus = cuando el campo está seleccionado (escribiendo en él) */
 input:focus {
   border-color: var(--turquesa);
-  box-shadow: 0 0 0 3px rgba(31, 168, 176, 0.2);
+  box-shadow: 0 0 0 4px rgba(31, 168, 176, 0.18);
 }
 
-/* Avisos de error/éxito que escribe el JS (por defecto en rojo) */
+/* Avisos de error/éxito que escribe el JS */
 .mensaje {
-  min-height: 18px;
+  min-height: 20px;
   margin: 4px 0 0;
   font-size: 14px;
   color: var(--error);
 }
 
+.mensaje:empty {
+  min-height: 0;
+}
+
 .reglas {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--texto-suave);
   margin: 6px 0 0;
 }
 
-/* Ojito de las contraseñas: el JS crea la caja .campo-clave alrededor de cada campo */
+/* Ojito de las contraseñas: el JS crea la caja .campo-clave alrededor del campo */
 .campo-clave {
-  position: relative;               /* para poder colocar el ojito encima del campo */
+  position: relative;
 }
 
 .campo-clave input {
-  padding-right: 46px;              /* deja espacio para que el texto no quede debajo del ojito */
+  padding-right: 48px;
 }
 
 .campo-clave .ojo {
-  position: absolute;               /* encima del campo, a la derecha y centrado en vertical */
+  position: absolute;
   right: 6px;
   top: 50%;
   transform: translateY(-50%);
@@ -139,9 +205,10 @@ input:focus {
   margin: 0;
   padding: 6px 8px;
   font-size: 16px;
+  line-height: 1;
   background: none;
   border: none;
-  opacity: 0.7;
+  opacity: 0.65;
 }
 
 .campo-clave .ojo:hover {
@@ -155,27 +222,24 @@ input:focus {
 
 
 /* ---------- 4) BOTONES ---------- */
-/* Botón principal: coral y a todo el ancho */
+/* Botón principal: coral con letra azul abismo (se lee mejor que blanco sobre coral) */
 button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
+  font: inherit;
   font-size: 15px;
-  font-weight: 600;
-  color: #ffffff;
+  font-weight: 700;
+  padding: 12px 20px;
+  color: var(--abismo);
   background: var(--coral);
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;                  /* manito al pasar el mouse */
-  transition: transform 0.1s, filter 0.2s;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.1s, filter 0.2s, background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
-/* :hover = mouse encima → se aclara un poco */
 button:hover {
-  filter: brightness(1.08);
+  filter: brightness(1.06);
 }
 
-/* :active = mientras se presiona → se encoge un poquito */
 button:active {
   transform: scale(0.98);
 }
@@ -183,107 +247,827 @@ button:active {
 /* Botón sin relleno: "Volver", "Cerrar sesión", "Cambiar ID" */
 button.secundario {
   background: transparent;
-  color: var(--texto-suave);
-  border: 1px solid var(--borde);
+  color: var(--texto);
+  border-color: var(--borde);
+}
+
+button.secundario:hover {
+  filter: none;
+  background: rgba(14, 124, 140, 0.08);
 }
 
 /* Botones que parecen enlace: "Crea tu cuenta", "¿Olvidaste...?" */
 button.enlace {
+  padding: 6px 0;
   background: none;
-  color: var(--turquesa);
-  font-weight: 500;
-  padding: 6px;
-  margin-top: 6px;
+  color: var(--mar);
+  font-weight: 600;
 }
 
 button.enlace:hover {
+  filter: none;
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 
-/* ---------- 5) LOGIN (coralis_pag.html) ---------- */
-/* Pantalla en 2 columnas iguales: izquierda login | derecha logo e info */
-.portada {
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+/* ---------- 5) PORTADA: BARRA SUPERIOR Y HÉROE ---------- */
+.barra-sitio {
+  position: fixed;
+  inset: 0 0 auto 0;                /* pegada arriba, de lado a lado */
+  z-index: 20;
+  display: flex;
   align-items: center;
-  gap: 48px;
+  gap: 24px;
+  padding: 12px clamp(16px, 4vw, 48px);
+  background: rgba(6, 42, 58, 0.72);
+  backdrop-filter: blur(14px) saturate(1.3);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.marca-sitio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--blanco);
+  font-family: var(--letra-titulo);
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.marca-sitio img {
+  width: 40px;
+  height: 40px;
+}
+
+.nav-sitio {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.nav-sitio a {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.78);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-sitio a:hover {
+  color: var(--blanco);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.boton-nav {
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--abismo);
+  background: var(--coral);
+}
+
+/* El héroe: agua de arriba (clara) hacia el fondo (oscura) */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 120px clamp(16px, 5vw, 64px) clamp(190px, 30vh, 300px);
+  color: var(--blanco);
+  background:
+    radial-gradient(70% 45% at 50% -8%, rgba(160, 245, 240, 0.45), transparent 70%),
+    linear-gradient(180deg, #18a3ad 0%, #0e7c8c 20%, #0a5a73 46%, #073f55 72%, var(--abismo) 100%);
+}
+
+.hero-contenido {
+  position: relative;
+  z-index: 2;                       /* por encima del agua y del arrecife */
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 410px);
+  align-items: center;
+  gap: clamp(32px, 6vw, 96px);
 }
 
+.lado-info h1 {
+  margin: 0 0 18px;
+  font-family: var(--letra-titulo);
+  font-weight: 700;
+  font-size: clamp(56px, 8.2vw, 118px);
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+  text-shadow: 0 12px 50px rgba(3, 30, 42, 0.35);
+}
+
+.lema {
+  margin: 0 0 14px;
+  max-width: 30ch;
+  font-size: clamp(20px, 2vw, 24px);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--turquesa-claro);
+}
+
+.introduccion {
+  margin: 0 0 28px;
+  max-width: 46ch;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.enlace-bajar {
+  display: inline-block;
+  padding-bottom: 4px;
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 2px solid var(--coral);
+}
+
+.enlace-bajar:hover {
+  border-bottom-color: var(--blanco);
+}
+
+/* Tarjeta de login: vidrio oscuro sobre el agua */
 .lado-login {
-  display: flex;
-  justify-content: center;
+  scroll-margin-top: 96px;
 }
 
 .tarjeta-login {
   width: 100%;
-  max-width: 380px;
-  background: var(--tarjeta);
-  border: 1px solid var(--borde);
-  border-radius: 16px;
   padding: 32px;
-  box-shadow: 0 20px 50px rgba(13, 59, 76, 0.15);   /* sombra para que "flote" */
-  backdrop-filter: blur(6px);                    /* desenfoca lo de atrás (efecto vidrio) */
+  border-radius: 24px;
+  background: rgba(6, 42, 58, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  box-shadow: 0 30px 80px rgba(2, 20, 28, 0.4);
 }
 
 .tarjeta-login h2 {
-  margin: 0 0 20px;
+  margin: 0;
+  font-family: var(--letra-titulo);
+  font-weight: 600;
   font-size: 24px;
 }
 
-.lado-info {
-  text-align: center;
+.ayuda-login {
+  margin: 6px 0 12px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-.logo {
-  width: 180px;
-  max-width: 60%;
-  margin-bottom: 12px;
-  filter: drop-shadow(0 10px 25px rgba(31, 168, 176, 0.35));
-  animation: flotar 6s ease-in-out infinite;   /* el logo "flota" como en el agua */
+.tarjeta-login button[type="submit"] {
+  margin-top: 6px;
 }
 
-/* Texto con degradado: el fondo de colores se "recorta" con la forma de las letras */
-.lado-info h1 {
-  margin: 0;
-  font-size: 56px;
-  letter-spacing: 2px;
-  background: linear-gradient(90deg, var(--turquesa), var(--alga));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.enlaces-login {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin-top: 14px;
 }
 
-.lema {
-  margin: 6px 0 24px;
-  font-size: 18px;
-  color: var(--coral);
+/* Campos y botones sobre fondo oscuro (login y ventanas emergentes) */
+.tarjeta-login label,
+.caja-popup label {
+  color: rgba(255, 255, 255, 0.78);
 }
 
-.introduccion {
-  max-width: 480px;
+.tarjeta-login input,
+.caja-popup input {
+  color: var(--blanco);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.tarjeta-login input::placeholder,
+.caja-popup input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.tarjeta-login input:focus,
+.caja-popup input:focus {
+  border-color: var(--turquesa-claro);
+  box-shadow: 0 0 0 4px rgba(143, 227, 221, 0.18);
+}
+
+.tarjeta-login button.enlace,
+.caja-popup button.enlace {
+  color: var(--turquesa-claro);
+}
+
+.pagina-portada :focus-visible {
+  outline-color: var(--turquesa-claro);
+}
+
+/* --- El agua en movimiento --- */
+.agua {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;             /* no estorba los clics */
+}
+
+/* Rayos de luz que entran desde la superficie */
+.rayo {
+  position: absolute;
+  top: -12%;
+  width: 140px;
+  height: 95%;
+  background: linear-gradient(180deg, rgba(200, 255, 250, 0.28), rgba(200, 255, 250, 0) 80%);
+  filter: blur(12px);
+  transform-origin: 50% 0;
+  transform: rotate(16deg);
+  animation: brillar 9s ease-in-out infinite alternate;
+}
+
+.rayo.r1 { left: 14%; }
+.rayo.r2 { left: 36%; width: 80px; animation-delay: -3s; }
+.rayo.r3 { left: 60%; width: 190px; animation-delay: -6s; }
+.rayo.r4 { left: 83%; width: 70px; animation-delay: -1.5s; }
+
+/* Burbujas que suben (cada una trae su posición y velocidad en style) */
+.burbuja-agua {
+  position: absolute;
+  bottom: -24px;
+  left: var(--x);
+  width: var(--s);
+  height: var(--s);
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  animation: subir-agua var(--t) linear infinite;
+  animation-delay: var(--d);
+}
+
+/* Cardumen de peces que cruza la pantalla */
+.cardumen {
+  position: absolute;
+  top: 18%;
+  left: 0;
+  width: clamp(130px, 15vw, 210px);
+  fill: rgba(200, 250, 245, 0.42);
+  animation: nadar 48s linear infinite;
+}
+
+.cardumen .pez {
+  animation: flotar-pez 3s ease-in-out infinite;
+  animation-delay: var(--d);
+}
+
+/* El arrecife del fondo (lo dibuja el SVG generado) */
+.arrecife {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 100%;
+  height: clamp(210px, 36vh, 340px);
+}
+
+.arrecife .capa.fondo { opacity: 0.6; }
+.arrecife .capa.media { opacity: 0.85; }
+
+.arrecife .mece {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;       /* se mece desde la base */
+  animation: mecer var(--t, 8s) ease-in-out infinite alternate;
+  animation-delay: var(--d, 0s);
+}
+
+.arrecife .mece.lento {
+  --t: 11s;
+}
+
+.arrecife .capa.fondo .mece {
+  animation: none;                  /* lo de muy atrás no se mueve */
+}
+
+
+/* ---------- 6) PORTADA: SECCIONES Y "QUÉ MIDE" ---------- */
+.seccion {
+  padding: clamp(72px, 10vw, 128px) clamp(16px, 5vw, 64px);
+  scroll-margin-top: 64px;          /* que la barra de arriba no tape el título */
+}
+
+.seccion.claro   { background: var(--espuma); }
+.seccion.blanca  { background: var(--blanco); }
+.seccion.oscuro  { background: var(--abismo); color: var(--blanco); }
+
+.ancho {
+  max-width: 1160px;
   margin: 0 auto;
-  font-size: 16px;
-  line-height: 1.7;
+}
+
+.cabeza-seccion {
+  max-width: 640px;
+  margin-bottom: clamp(40px, 5vw, 64px);
+}
+
+.seccion h2 {
+  margin: 0 0 14px;
+  font-family: var(--letra-titulo);
+  font-weight: 600;
+  font-size: clamp(28px, 3.4vw, 42px);
+  letter-spacing: -0.02em;
+}
+
+.cabeza-seccion p {
+  margin: 0;
+  font-size: 18px;
   color: var(--texto-suave);
 }
 
+/* Las tres variables, en columnas separadas por una línea */
+.variables {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
 
-/* ---------- 6) VENTANAS EMERGENTES (POPUPS DEL LOGIN) ---------- */
+.variable {
+  padding: 0 clamp(20px, 3vw, 40px);
+  border-left: 1px solid var(--borde);
+}
+
+.variable:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+
+.variable:last-child {
+  padding-right: 0;
+}
+
+.icono-variable {
+  width: 36px;
+  height: 36px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.v-temp .icono-variable { color: var(--coral); }
+.v-ph   .icono-variable { color: var(--turquesa); }
+.v-turb .icono-variable { color: var(--alga); }
+
+.variable h3 {
+  margin: 18px 0 2px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.rango-ideal {
+  margin: 0 0 12px;
+  font-family: var(--letra-titulo);
+  font-weight: 600;
+  font-size: clamp(30px, 3.2vw, 42px);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--abismo);
+  font-variant-numeric: tabular-nums;
+}
+
+.rango-ideal span {
+  font-size: 0.5em;
+  font-weight: 500;
+  color: var(--texto-suave);
+}
+
+.variable > p:not(.rango-ideal) {
+  margin: 0;
+  max-width: 34ch;
+  color: var(--texto-suave);
+}
+
+/* La barra con las zonas crítico / medio / ideal (anchos reales del código) */
+.escala {
+  display: grid;
+  gap: 2px;
+  height: 10px;
+  margin-top: 26px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.z.ideal   { background: var(--ideal); }
+.z.medio   { background: var(--medio-claro); }
+.z.critico { background: var(--error); }
+
+.marcas {
+  position: relative;
+  height: 24px;
+  font-size: 13px;
+  color: var(--texto-suave);
+  font-variant-numeric: tabular-nums;
+}
+
+.marcas span {
+  position: absolute;
+  top: 6px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.marcas .m-ideal {
+  font-weight: 700;
+  color: var(--alga-texto);
+}
+
+.leyenda-escala {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin: 48px 0 0;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+
+.clave {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-left: 10px;
+}
+
+.clave:first-child { margin-left: 0; }
+.clave.ideal   { background: var(--ideal); }
+.clave.medio   { background: var(--medio-claro); }
+.clave.critico { background: var(--error); }
+
+
+/* ---------- 7) PORTADA: EL CORAL (DEMO DE LOS 3 ESTADOS) ---------- */
+.demo {
+  display: grid;
+  grid-template-columns: minmax(260px, 440px) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(40px, 7vw, 104px);
+}
+
+/* Ventana redonda de agua donde vive el coral */
+.ventana-coral {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--agua);
+  box-shadow:
+    inset 0 0 0 10px rgba(255, 255, 255, 0.06),
+    0 40px 100px rgba(0, 0, 0, 0.35);
+}
+
+/* Capa que enturbia el agua cuando el coral está mal */
+.ventana-coral::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #9fb39a;
+  opacity: 0;
+  mix-blend-mode: color;
+  transition: opacity 1.4s ease;
+}
+
+/* Lecho marino oscuro donde se apoya la roca */
+.ventana-coral::before {
+  content: "";
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: -26%;
+  height: 42%;
+  border-radius: 50%;
+  background: #0a4559;
+}
+
+.ventana-coral .coral {
+  position: absolute;
+  inset: 2% 2% -9% 2%;              /* el coral llena la ventana; la roca se sale por abajo */
+  z-index: 1;
+}
+
+.demo:has(input[value="sano"]:checked) .coral       { --blanqueo: 0;    --hueso: var(--hueso-blanco); }
+.demo:has(input[value="riesgo"]:checked) .coral     { --blanqueo: 0.55; --hueso: var(--hueso-blanco); }
+.demo:has(input[value="blanqueado"]:checked) .coral { --blanqueo: 1;    --hueso: var(--hueso-blanco); }
+.demo:has(input[value="riesgo"]:checked) .ventana-coral::after     { opacity: 0.35; }
+.demo:has(input[value="blanqueado"]:checked) .ventana-coral::after { opacity: 0.6; }
+
+.demo-texto h2 {
+  max-width: 18ch;
+}
+
+.demo-texto p {
+  margin: 0 0 14px;
+  max-width: 54ch;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+/* Las tres opciones (radio) para probar los estados */
+.estados {
+  display: grid;
+  gap: 10px;
+  margin: 28px 0 0;
+  padding: 0;
+  border: none;
+  max-width: 520px;
+}
+
+.opcion-estado {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 14px;
+  margin: 0;
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--blanco);
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.opcion-estado:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.opcion-estado input {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin: 4px 0 0;
+  padding: 0;
+  grid-row: span 2;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.opcion-estado input:checked {
+  border-color: var(--color-estado);
+  background: radial-gradient(circle, var(--color-estado) 0 42%, transparent 46%);
+}
+
+.opcion-estado input:focus {
+  box-shadow: none;
+}
+
+.opcion-estado:has(input:checked) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--color-estado);
+}
+
+.e-sano       { --color-estado: var(--alga-claro); }
+.e-riesgo     { --color-estado: var(--medio-claro); }
+.e-blanqueado { --color-estado: #f4efe4; }
+
+.nombre-estado {
+  font-weight: 700;
+}
+
+.detalle-estado {
+  grid-column: 2;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+
+/* ---------- 8) PORTADA: CÓMO FUNCIONA, QUIÉNES SOMOS Y PIE ---------- */
+/* Ruta del dato: 6 pasos sobre una línea punteada; un punto la recorre */
+.ruta {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+}
+
+.ruta::before {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: calc(100% / 12);
+  right: calc(100% / 12);
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--turquesa) 0 8px, transparent 8px 16px);
+}
+
+.ruta::after {
+  content: "";
+  position: absolute;
+  top: 17px;
+  left: calc(100% / 12);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--coral);
+  box-shadow: 0 0 0 6px rgba(255, 107, 107, 0.22);
+  animation: viajar 7s ease-in-out infinite;
+}
+
+.paso {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: var(--blanco);
+  border: 2px solid var(--turquesa);
+  font-family: var(--letra-titulo);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--mar-oscuro);
+}
+
+.ruta h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.ruta p {
+  margin: 0;
+  font-size: 15px;
+  color: var(--texto-suave);
+}
+
+/* Quiénes somos */
+.nosotros {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(40px, 6vw, 88px);
+  align-items: start;
+}
+
+.nosotros-texto > p {
+  margin: 0;
+  max-width: 52ch;
+  font-size: 18px;
+  color: var(--texto-suave);
+}
+
+.datos-academicos {
+  margin: 36px 0 0;
+}
+
+.datos-academicos div {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--borde);
+}
+
+.datos-academicos dt {
+  font-size: 15px;
+  color: var(--texto-suave);
+}
+
+.datos-academicos dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.equipo {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.persona {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: var(--espuma);
+}
+
+.persona .avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--coral);
+}
+
+.persona:nth-child(3n + 2) .avatar { background: var(--turquesa); }
+.persona:nth-child(3n + 3) .avatar { background: var(--alga); }
+
+.persona .avatar svg {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: var(--abismo);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.persona h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.persona p {
+  margin: 2px 0 0;
+  font-size: 15px;
+  color: var(--texto-suave);
+}
+
+/* Pie de página */
+.pie {
+  padding: 56px clamp(16px, 5vw, 64px) 36px;
+  background: var(--abismo);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.pie-contenido {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 28px 40px;
+}
+
+.pie-marca {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pie-marca strong {
+  font-family: var(--letra-titulo);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--blanco);
+}
+
+.pie-marca p {
+  margin: 2px 0 0;
+  font-size: 15px;
+}
+
+.pie-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+}
+
+.pie-nav a {
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.pie-nav a:hover {
+  color: var(--blanco);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.pie-nota {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+
+/* ---------- 9) VENTANAS EMERGENTES (POPUPS DEL LOGIN) ---------- */
 /* Empiezan ocultas; el JS les pone la clase "abierto" para mostrarlas */
 .popup {
   position: fixed;
-  inset: 0;                         /* ocupa toda la pantalla */
+  inset: 0;
+  z-index: 30;
   display: none;
   justify-content: center;
   align-items: center;
   padding: 16px;
-  background: rgba(13, 59, 76, 0.35);   /* oscurece un poco, sin tapar la página */
-  z-index: 10;                      /* queda por encima de todo lo demás */
+  background: rgba(3, 22, 31, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .popup.abierto {
@@ -292,25 +1076,27 @@ button.enlace:hover {
 
 .caja-popup {
   width: 100%;
-  max-width: 360px;
-  background: var(--fondo-claro);
-  border: 1px solid var(--borde);
-  border-top: 4px solid var(--alga);   /* franja verde arriba */
-  border-radius: 16px;
+  max-width: 380px;
   padding: 28px;
-  box-shadow: 0 20px 50px rgba(13, 59, 76, 0.25);
-  animation: aparecer 0.25s ease-out;  /* entra con un pequeño movimiento */
+  border-radius: 24px;
+  color: var(--blanco);
+  background: var(--abismo-2);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+  animation: aparecer 0.25s ease-out;
 }
 
 .caja-popup h3 {
   margin: 0 0 8px;
+  font-family: var(--letra-titulo);
+  font-weight: 600;
   font-size: 20px;
 }
 
 .caja-popup p {
-  color: var(--texto-suave);
-  font-size: 14px;
-  margin: 0 0 12px;
+  margin: 0 0 14px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .caja-popup input,
@@ -322,11 +1108,35 @@ button.enlace:hover {
   margin-bottom: 0;
 }
 
+.caja-popup .reglas,
+.caja-popup .mensaje {
+  margin: 4px 0 8px;
+  font-size: 13px;
+}
 
-/* ---------- 7) BARRA LATERAL (página principal) ---------- */
-/* Contenedor: barra a la izquierda y contenido a la derecha (flex = en fila) */
+.caja-popup .reglas {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.caja-popup button {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.caja-popup button.secundario {
+  color: var(--blanco);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.caja-popup button.secundario:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+
+/* ---------- 10) PANEL: BARRA LATERAL ---------- */
 .contenedor {
-  display: flex;
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
   min-height: 100vh;
 }
 
@@ -334,127 +1144,153 @@ button.enlace:hover {
   position: sticky;                 /* se queda quieta al bajar */
   top: 0;
   height: 100vh;
-  width: 200px;                     /* barra angosta */
-  flex-shrink: 0;                   /* la barra no se aplasta */
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 24px 16px;
-  /* degradado de mar: de azul verdoso a azul más profundo */
-  background: linear-gradient(180deg, var(--mar) 0%, var(--mar-oscuro) 100%);
-  box-shadow: 4px 0 20px rgba(13, 59, 76, 0.15);
+  gap: 32px;
+  padding: 26px 18px 22px;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--abismo-2) 0%, var(--abismo) 70%);
+  color: var(--blanco);
 }
 
 .marca {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 0 6px;
 }
 
 .logo-barra {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
 }
 
-/* En la barra el nombre va en blanco con un toque aguamarina */
 .nombre {
-  font-size: 22px;
-  font-weight: 700;
-  background: linear-gradient(90deg, #ffffff, #b8f1ee);
-  -webkit-background-clip: text;
-  background-clip: text;  color: transparent;
+  font-family: var(--letra-titulo);
+  font-weight: 600;
+  font-size: 20px;
 }
 
 .menu {
   display: flex;
-  flex-direction: column;           /* botones uno debajo del otro */
-  gap: 6px;
+  flex-direction: column;
+  gap: 4px;
 }
 
-/* Los botones del menú no son coral como los demás */
+/* Los botones del menú */
 .pestana {
-  margin: 0;
-  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 14px;
   text-align: left;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.72);
   background: transparent;
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid transparent;
+  border-color: transparent;
 }
 
 .pestana:hover {
-  background: rgba(255, 255, 255, 0.12);
+  filter: none;
+  color: var(--blanco);
+  background: rgba(255, 255, 255, 0.07);
 }
 
 /* La sección que se está viendo (el JS pone la clase "activa") */
 .pestana.activa {
-  color: var(--mar-oscuro);
-  background: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  color: var(--blanco);
+  background: rgba(31, 168, 176, 0.22);
+  border-color: rgba(143, 227, 221, 0.25);
+}
+
+.pestana.activa .ico {
+  color: var(--turquesa-claro);
+}
+
+.ico {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .sesion {
+  position: relative;
+  z-index: 1;
   margin-top: auto;                 /* empuja esto hasta abajo de la barra */
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  padding: 0 6px;
 }
 
 .usuario {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.8);
-  word-break: break-all;            /* si el correo es largo, baja de línea */
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  word-break: break-all;
 }
 
 .sesion button {
-  margin: 0;
-  padding: 8px;
+  padding: 9px;
   font-size: 14px;
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.5);
+  color: var(--blanco);
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(6, 42, 58, 0.6);
+}
+
+.sesion button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Arrecife pequeño de adorno al fondo de la barra */
+.arrecife-lateral {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 120px;
+  opacity: 0.16;
+  pointer-events: none;
 }
 
 
-/* ---------- 8) CONTENIDO Y TARJETAS ---------- */
+/* ---------- 11) PANEL: CONTENIDO Y TARJETAS ---------- */
 .panel {
-  flex: 1;                          /* ocupa todo el espacio a la derecha */
   min-width: 0;
-  padding: 32px;
+  padding: clamp(24px, 4vw, 48px);
 }
 
-/* Título y texto de arriba de cada sección, centrados */
+.panel > section {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
 .panel h1 {
-  margin: 0 0 4px;
-  font-size: 30px;
-  text-align: center;
+  margin: 0 0 6px;
+  font-family: var(--letra-titulo);
+  font-weight: 600;
+  font-size: clamp(26px, 3vw, 34px);
+  letter-spacing: -0.02em;
 }
 
 .estado {
-  margin: 0 0 24px;
-  font-size: 14px;
+  margin: 0 0 28px;
+  font-size: 15px;
   color: var(--texto-suave);
-  text-align: center;
 }
 
 /* Tarjeta base: la usan las gráficas, el ID, la tabla, nosotros y cuenta */
 .tarjeta {
-  background: var(--tarjeta);
+  padding: 22px;
+  border-radius: 20px;
+  background: var(--blanco);
   border: 1px solid var(--borde);
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: var(--sombra);
-}
-
-/* Círculo con el emoji (tarjetas de gráficas) */
-.icono {
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  border-radius: 50%;               /* 50% = círculo */
-  background: rgba(31, 168, 176, 0.12);
 }
 
 .subtitulo {
@@ -463,52 +1299,84 @@ button.enlace:hover {
   color: var(--texto-suave);
 }
 
-
-/* ---------- 9) INICIO: ID, RESUMEN, PERIODO Y GRÁFICAS ---------- */
-
-/* Cuadro para escribir el ID, centrado */
-.buscar-id {
-  max-width: 460px;
-  margin: 6vh auto 0;               /* auto a los lados = centrado */
-  padding: 36px 32px;
-  align-items: center;              /* centra todo lo de adentro */
-  gap: 6px;
-  text-align: center;
-  border-top: 4px solid var(--turquesa);
-  /* brillo turquesa suave alrededor */
-  box-shadow: 0 20px 50px rgba(13, 59, 76, 0.12), 0 0 40px rgba(31, 168, 176, 0.18);
+.etiqueta {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto-suave);
 }
 
-/* Círculo grande con el ícono, flota como el logo del login */
-.icono-grande {
-  width: 72px;
-  height: 72px;
-  display: flex;
+.nota {
+  margin: 16px 0 0;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+
+/* ---------- 12) PANEL: INICIO (ID, RESUMEN, PERIODO Y GRÁFICAS) ---------- */
+/* Cuadro para escribir el ID, centrado */
+.buscar-id {
+  max-width: 500px;
+  margin: 5vh auto 0;
+  padding: 40px 36px 32px;
   align-items: center;
-  justify-content: center;
-  font-size: 34px;
+  gap: 6px;
+  text-align: center;
+  border-radius: 28px;
+  box-shadow: 0 30px 70px -36px rgba(6, 42, 58, 0.45);
+}
+
+/* Antena con ondas de sonar que salen */
+.icono-grande {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(31, 168, 176, 0.25), rgba(47, 174, 122, 0.18));
-  border: 1px solid var(--turquesa);
-  animation: flotar 6s ease-in-out infinite;
+  color: var(--blanco);
+  background: var(--agua);
+}
+
+.icono-grande svg {
+  width: 34px;
+  height: 34px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.icono-grande::before,
+.icono-grande::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--turquesa);
+  animation: sonar 2.8s ease-out infinite;
+}
+
+.icono-grande::after {
+  animation-delay: 1.4s;
 }
 
 .buscar-id h2 {
-  margin: 12px 0 0;
-  font-size: 24px;
+  margin: 16px 0 0;
+  font-family: var(--letra-titulo);
+  font-weight: 600;
+  font-size: 22px;
 }
 
 .texto-id {
-  margin: 0 0 12px;
-  font-size: 14px;
+  margin: 0 0 10px;
+  font-size: 15px;
   color: var(--texto-suave);
 }
 
 .buscar-id label {
-  align-self: flex-start;           /* la etiqueta queda a la izquierda, encima del campo */
+  align-self: flex-start;
 }
 
-/* El campo del ID y el botón en la misma fila */
 .fila-id {
   width: 100%;
   display: flex;
@@ -516,70 +1384,81 @@ button.enlace:hover {
 }
 
 .fila-id input {
-  text-transform: uppercase;        /* lo que se escribe se ve en mayúsculas */
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .fila-id button {
-  width: auto;
-  margin: 0;
-  padding: 12px 24px;
-  white-space: nowrap;              /* el texto del botón no se parte */
+  white-space: nowrap;
 }
 
-/* Franja de resumen: dispositivo, última lectura, cantidad */
+.buscar-id .mensaje {
+  text-align: center;
+}
+
+/* Franja de resumen: dispositivo, última lectura y cantidad (azul abismo) */
 .resumen {
   display: flex;
-  flex-wrap: wrap;                  /* en pantallas pequeñas baja de línea */
+  flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
-  padding: 16px 20px;
-  margin-bottom: 16px;
-  border-radius: 16px;
-  border: 1px solid var(--borde);
-  background: linear-gradient(90deg, rgba(31, 168, 176, 0.16), rgba(47, 174, 122, 0.10));
+  gap: 14px 28px;
+  margin-bottom: 14px;
+  padding: 18px 24px;
+  border-radius: 20px;
+  color: var(--blanco);
+  background: var(--abismo);
 }
 
 .dato-resumen {
   display: flex;
   flex-direction: column;
-  padding-right: 16px;
-  border-right: 1px solid var(--borde);   /* rayita que separa cada dato */
+  padding-right: 28px;
+  border-right: 1px solid rgba(255, 255, 255, 0.14);
 }
 
-.dato-resumen:last-of-type {
+.dato-resumen:nth-of-type(3) {
   border-right: none;
+}
+
+.resumen .etiqueta {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .dato-resumen strong {
   font-size: 18px;
+  font-variant-numeric: tabular-nums;
 }
 
-.etiqueta {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--texto-suave);
+#resId {
+  font-family: var(--letra-titulo);
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }
 
-/* Botones de la franja: "Recibir alertas" y "Cambiar ID", pegados a la derecha */
 .suscribir,
 .cambiar-id {
-  width: auto;
-  margin: 0;
-  padding: 8px 16px;
-  background: #ffffff;
+  padding: 9px 16px;
+  font-size: 14px;
+}
+
+.resumen button.secundario {
+  color: var(--blanco);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.resumen button.secundario:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .suscribir {
-  margin-left: auto;                /* margin-left: auto los empuja a la derecha */
-  color: var(--turquesa);
-  border-color: var(--turquesa);
+  margin-left: auto;                /* empuja los dos botones a la derecha */
 }
 
 /* Cuando ya está suscrito, el botón se pinta de turquesa */
-.suscribir.activa {
-  color: #ffffff;
-  background: var(--turquesa);
+.resumen .suscribir.activa {
+  color: var(--abismo);
+  background: var(--turquesa-claro);
+  border-color: var(--turquesa-claro);
 }
 
 .suscribir:disabled {
@@ -588,62 +1467,55 @@ button.enlace:hover {
 }
 
 #msgSuscripcion {
-  margin: -8px 0 12px;
-  text-align: center;
+  margin: 0 0 14px;
 }
 
-/* Botones Semana / Mes */
+/* Botones Semana / Mes (y Temperatura / pH / Turbidez en Consultas) */
 .periodo {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
+  gap: 6px;
+  margin: 28px 0 16px;
+  font-size: 15px;
   color: var(--texto-suave);
+}
+
+.periodo > span {
+  margin-right: 4px;
 }
 
 .opcion {
-  width: auto;
-  margin: 0;
-  padding: 8px 20px;
-  border-radius: 999px;             /* forma de pastilla */
-  background: transparent;
-  color: var(--texto-suave);
-  border: 1px solid var(--borde);
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  color: var(--texto);
+  background: var(--blanco);
+  border-color: var(--borde);
 }
 
-/* El periodo escogido se pinta de turquesa */
+.opcion:hover {
+  filter: none;
+  border-color: var(--mar);
+}
+
 .opcion.activa {
-  background: var(--turquesa);
-  color: #ffffff;
-  border-color: var(--turquesa);
+  color: var(--blanco);
+  background: var(--abismo);
+  border-color: var(--abismo);
 }
 
-/* Tarjetas de las gráficas: tantas por fila como quepan, de mínimo 300px */
+/* Tarjetas de las gráficas: tantas por fila como quepan */
 .tarjetas {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+  gap: 18px;
 }
 
-.tarjetas .tarjeta {
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-/* Al pasar el mouse la tarjeta sube un poquito */
-.tarjetas .tarjeta:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 40px rgba(13, 59, 76, 0.18);
-}
-
-/* Cada tarjeta con su color: franja de arriba y número grande */
-.temp { border-top: 4px solid var(--coral); }
-.ph   { border-top: 4px solid var(--turquesa); }
-.turb { border-top: 4px solid var(--alga); }
-
-.temp .valor span { color: var(--coral); }
-.ph   .valor span { color: var(--turquesa); }
-.turb .valor span { color: var(--alga); }
+/* Cada variable con su color (lo usan el ícono y el número grande) */
+.temp { --color-var: var(--coral);    --color-var-texto: var(--coral-texto); }
+.ph   { --color-var: var(--turquesa); --color-var-texto: var(--mar); }
+.turb { --color-var: var(--alga);     --color-var-texto: var(--alga-texto); }
 
 .cabeza {
   display: flex;
@@ -653,75 +1525,80 @@ button.enlace:hover {
 
 .cabeza h3 {
   margin: 0;
-  font-size: 18px;
+  font-size: 17px;
+}
+
+.icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  color: var(--color-var);
+  background: color-mix(in srgb, var(--color-var) 14%, transparent);
+}
+
+.icono svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .valor {
-  margin: 16px 0 0;
-  font-size: 18px;
+  margin: 18px 0 0;
+  font-size: 16px;
   color: var(--texto-suave);
 }
 
-/* El número grande */
 .valor span {
+  font-family: var(--letra-titulo);
+  font-weight: 600;
   font-size: 40px;
-  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--abismo);
+  font-variant-numeric: tabular-nums;
 }
 
-/* La flechita ▲▼ con cuánto cambió */
 .cambio {
-  min-height: 18px;
-  margin: 4px 0 12px;
-  font-size: 14px;
+  min-height: 20px;
+  margin: 2px 0 14px;
+  font-size: 13px;
   color: var(--texto-suave);
 }
 
-/* Etiqueta de estado: Normal (verde) / Fuera de rango (rojo) */
+/* Etiqueta de estado arriba a la derecha: Ideal / Medio / Crítico */
 .chip {
-  margin-left: auto;                /* la empuja a la derecha */
+  margin-left: auto;
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .chip:empty {
-  display: none;                    /* si no tiene texto, no se ve */
+  display: none;
 }
 
-/* Ideal = verde, Medio = amarillo, Crítico = rojo */
-.chip.ideal {
-  color: var(--alga);
-  background: rgba(47, 174, 122, 0.12);
-  border: 1px solid var(--alga);
-}
+.chip.ideal   { color: var(--alga-texto);  background: rgba(47, 174, 122, 0.14); }
+.chip.medio   { color: var(--medio-texto); background: rgba(242, 193, 78, 0.28); }
+.chip.critico { color: var(--coral-texto); background: rgba(229, 72, 77, 0.12); }
 
-.chip.medio {
-  color: var(--medio);
-  background: rgba(214, 160, 30, 0.12);
-  border: 1px solid var(--medio);
-}
-
-.chip.critico {
-  color: var(--error);
-  background: rgba(229, 72, 77, 0.10);
-  border: 1px solid var(--error);
-}
-
-/* Espacio de la gráfica (canvas = lienzo donde Chart.js dibuja) */
+/* Lienzo donde Chart.js dibuja */
 .tarjeta canvas {
   width: 100%;
-  height: 160px;
-  border-radius: 10px;
-  background: var(--fondo-oscuro);
 }
 
-/* Promedio, mínimo y máximo debajo de cada gráfica (3 columnas) */
+/* Promedio, mínimo y máximo debajo de cada gráfica */
 .mini-datos {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 14px;
 }
 
 .mini-datos div {
@@ -729,8 +1606,8 @@ button.enlace:hover {
   flex-direction: column;
   align-items: center;
   padding: 8px;
-  border-radius: 10px;
-  background: var(--fondo-oscuro);
+  border-radius: 12px;
+  background: var(--espuma);
 }
 
 .mini-datos span {
@@ -740,28 +1617,157 @@ button.enlace:hover {
 
 .mini-datos strong {
   font-size: 16px;
-}
-
-.nota {
-  margin: 16px 0 0;
-  font-size: 12px;
-  color: var(--texto-suave);
+  font-variant-numeric: tabular-nums;
 }
 
 
-/* ---------- 10) CONSULTAS: TABLA DEL DÍA ---------- */
-/* Buscador del día, centrado, con el campo y el botón en fila */
+/* ---------- 13) PANEL: ACUARIO (SALUD DEL CORAL) ---------- */
+/* La tarjeta grande es una ventana al agua; el coral se apoya en el fondo */
+.salud {
+  position: relative;
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  align-items: center;
+  gap: 32px;
+  padding: 20px 36px 0;
+  overflow: hidden;
+  color: var(--blanco);
+  border: none;
+  border-radius: 28px;
+  background:
+    linear-gradient(105deg, transparent 20%, rgba(200, 255, 250, 0.1) 32%, transparent 42%),
+    linear-gradient(80deg, transparent 50%, rgba(200, 255, 250, 0.07) 60%, transparent 70%),
+    var(--agua);
+}
+
+/* Capa que enturbia el agua según el estado */
+.salud::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #9fb39a;
+  opacity: 0;
+  mix-blend-mode: color;
+  pointer-events: none;
+  transition: opacity 1.4s ease;
+}
+
+.salud.riesgo::after     { opacity: 0.35; }
+.salud.blanqueado::after { opacity: 0.6; }
+
+.salud > * {
+  position: relative;
+  z-index: 1;
+}
+
+.salud .coral {
+  width: 300px;
+  height: 300px;
+  align-self: end;
+  margin-bottom: -8px;              /* la roca toca el borde de abajo */
+}
+
+.salud-texto {
+  padding-bottom: 28px;
+}
+
+.salud .etiqueta {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.salud h2 {
+  margin: 4px 0 8px;
+  font-family: var(--letra-titulo);
+  font-weight: 600;
+  font-size: clamp(26px, 3vw, 36px);
+  letter-spacing: -0.02em;
+}
+
+.salud.sano h2       { color: var(--alga-claro); }
+.salud.riesgo h2     { color: var(--medio-claro); }
+.salud.blanqueado h2 { color: #f4efe4; }
+
+.salud p {
+  margin: 0 0 14px;
+  max-width: 54ch;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* Las 3 variables con su puntico de color */
+.indicadores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+
+.indicadores li {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  background: rgba(6, 42, 58, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.indicadores li::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  vertical-align: 1px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.indicadores li.ideal::before   { background: var(--alga-claro); }
+.indicadores li.medio::before   { background: var(--medio-claro); }
+.indicadores li.critico::before { background: #ff8a8a; }
+
+/* Leyenda de colores */
+.salud .leyenda {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.muestra {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin: 0 4px 0 12px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.item-leyenda {
+  display: inline-block;
+  margin-right: 14px;
+  white-space: nowrap;
+}
+
+.item-leyenda .muestra {
+  margin-left: 0;
+}
+.muestra.sano       { background: conic-gradient(var(--coral) 0 33%, var(--turquesa) 0 66%, var(--alga) 0); }
+.muestra.riesgo     { background: #f2c4bd; }
+.muestra.blanqueado { background: #f4efe4; }
+
+
+/* ---------- 14) PANEL: CONSULTAS Y TABLA ---------- */
 .filtro {
-  max-width: 640px;
-  margin: 0 auto;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 16px;
-  padding: 20px;
-  background: var(--tarjeta);
+  gap: 12px;
+  max-width: 720px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: var(--blanco);
   border: 1px solid var(--borde);
-  border-radius: 16px;
 }
 
 .filtro div {
@@ -772,371 +1778,43 @@ button.enlace:hover {
   min-width: 200px;
 }
 
+.filtro label {
+  margin: 0;
+}
+
 .filtro input {
   color-scheme: light;              /* el calendario sale en modo claro */
 }
 
-.filtro button {
-  width: auto;
-  margin: 0;
-  padding: 12px 28px;
+.filtro .flecha {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
 }
 
-/* Mensajes centrados (ID, consulta y cuenta) */
-.buscar-id .mensaje,
+.filtro .flecha svg,
+.descargar svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 #msgConsulta,
 #msgCuenta {
-  text-align: center;
-}
-
-.tabla-caja {
-  padding: 0;
-  overflow-x: auto;                 /* en celular la tabla se puede mover de lado */
-}
-
-.tabla {
-  width: 100%;
-  border-collapse: collapse;        /* une los bordes de las celdas */
-  font-size: 14px;
-}
-
-.tabla th,
-.tabla td {
-  padding: 12px 16px;
-  text-align: left;
-  border-bottom: 1px solid var(--borde);
-}
-
-.tabla th {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--texto-suave);
-  background: var(--fondo-oscuro);
-}
-
-/* Filas alternadas de otro tono para leer más fácil */
-.tabla tbody tr:nth-child(even) {
-  background: rgba(31, 168, 176, 0.04);
-}
-
-.tabla tbody tr:hover {
-  background: rgba(31, 168, 176, 0.10);
-}
-
-/* La columna de la hora resaltada */
-.tabla td:first-child {
-  color: var(--turquesa);
-  font-weight: 600;
-}
-
-
-/* ---------- 11) SOBRE NOSOTROS ---------- */
-/* Cada bloque de texto es una tarjeta centrada */
-.bloque {
-  max-width: 900px;
-  margin: 0 auto 20px;
-}
-
-.bloque h3 {
-  margin: 0 0 10px;
-  font-size: 18px;
-  color: var(--turquesa);
-}
-
-.bloque p,
-.bloque li {
-  color: var(--texto-suave);
-  line-height: 1.7;
-}
-
-.bloque p {
-  margin: 0 0 8px;
-}
-
-.bloque strong {
-  color: var(--texto);              /* lo que está en negrita se ve en blanco */
-}
-
-/* El flujo de datos resaltado en una cajita */
-.bloque .flujo {
-  padding: 12px 16px;
-  border-radius: 10px;
-  background: var(--fondo-oscuro);
-  border: 1px solid var(--borde);
-  color: var(--alga);
-  font-weight: 600;
-}
-
-.subtitulo-seccion {
-  margin: 28px 0 14px;
-  font-size: 22px;
-  text-align: center;
-}
-
-/* Tarjetas de los autores: tantas por fila como quepan */
-.autores {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
-  max-width: 900px;
-  margin: 0 auto 20px;
-}
-
-.autor {
-  text-align: center;
-  padding: 20px;
-  background: var(--tarjeta);
-  border: 1px solid var(--borde);
-  border-top: 4px solid var(--coral);   /* franja coral arriba */
-  border-radius: 16px;
-}
-
-.autor h3 {
-  margin: 10px 0 4px;
-  font-size: 17px;
-}
-
-.autor p {
-  margin: 0;
-  font-size: 14px;
-  color: var(--texto-suave);
-}
-
-.autor .pequeno {
-  margin-top: 6px;
-  font-size: 12px;
-}
-
-/* Círculo con las iniciales */
-.avatar {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 22px;
-  font-weight: 700;
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--turquesa), var(--alga));
-}
-
-
-/* ---------- 12) MI CUENTA ---------- */
-/* Tarjeta centrada con los campos uno debajo del otro */
-.tarjeta-cuenta {
-  max-width: 420px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.tarjeta-cuenta h3 {
-  margin: 16px 0 0;
-  font-size: 18px;
-  text-align: center;
-}
-
-/* El título "Correo" y el correo, centrados */
-.tarjeta-cuenta > label:first-child,
-.dato {
-  text-align: center;
-}
-
-.dato {
-  margin: 0;
-  font-size: 16px;
-  color: var(--turquesa);
-}
-
-
-/* ---------- 13) CORAL DE SALUD ---------- */
-/* El dibujo lo pone el JS dentro de cada class="coral".
-   Sus partes usan 3 colores (--c1, --c2, --c3) que cambian según el estado. */
-.coral {
-  /* colores por defecto (sin datos): gris clarito */
-  --c1: #d9e4e7;
-  --c2: #cfdde1;
-  --c3: #c5d6db;
-}
-
-/* Sano: coral verde vivo (tres tonos de verde) */
-.sano .coral {
-  --c1: #2fae7a;
-  --c2: #5cc98a;
-  --c3: #1f8f6a;
-}
-
-/* En riesgo: amarillento y pálido */
-.riesgo .coral {
-  --c1: #e3d58c;
-  --c2: #ece2a9;
-  --c3: #d8c97a;
-}
-
-/* Blanqueado: blanco hueso, como el coral cuando se enferma */
-.blanqueado .coral {
-  --c1: #f7f5f0;
-  --c2: #efede6;
-  --c3: #e8e5dc;
-}
-
-.coral svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-/* Las ramas: líneas gruesas y redondeadas */
-.coral .rama path {
-  fill: none;
-  stroke-width: 12;
-  stroke-linecap: round;
-  transition: stroke 1s;            /* el cambio de color es suave */
-}
-
-/* Cuando está blanqueado se le pone un borde gris para que se note sobre blanco */
-.blanqueado .coral .rama {
-  filter: drop-shadow(0 0 1px #b9b5aa);
-}
-
-.coral .r1 path { stroke: var(--c1); }
-.coral .r2 path { stroke: var(--c2); }
-.coral .r3 path { stroke: var(--c3); }
-
-.coral .roca {
-  fill: #c9b79c;
-}
-
-/* Las ramas se mecen como con la corriente */
-.coral .rama {
-  transform-origin: 100px 190px;    /* gira desde la base del coral */
-  animation: mecerse 5s ease-in-out infinite;
-}
-
-.coral .r2 { animation-delay: -1.5s; }
-.coral .r3 { animation-delay: -3s; }
-
-/* Burbujas que suben */
-.coral .burbuja {
-  fill: none;
-  stroke: var(--turquesa);
-  stroke-width: 1.5;
-  opacity: 0;
-  animation: subir 4s ease-in infinite;
-}
-
-.coral .b2 { animation-delay: 1.3s; }
-.coral .b3 { animation-delay: 2.6s; }
-
-/* Tarjeta grande del coral en Inicio */
-.salud {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  margin-bottom: 20px;
-  padding: 20px 28px;
-  border-left: 6px solid var(--borde);
-  transition: border-color 1s, background 1s;
-}
-
-.salud .coral {
-  width: 150px;
-  height: 150px;
-  flex-shrink: 0;
-}
-
-.salud h2 {
-  margin: 4px 0;
-  font-size: 26px;
-}
-
-.salud p {
-  margin: 0 0 10px;
-  color: var(--texto-suave);
-}
-
-/* El color del borde y del fondo siguen el estado del coral */
-.salud.sano {
-  border-left-color: var(--alga);
-  background: linear-gradient(90deg, rgba(47, 174, 122, 0.12), var(--tarjeta) 60%);
-}
-
-.salud.riesgo {
-  border-left-color: #d6b94a;
-  background: linear-gradient(90deg, rgba(214, 185, 74, 0.14), var(--tarjeta) 60%);
-}
-
-.salud.blanqueado {
-  border-left-color: #b9b5aa;
-  background: linear-gradient(90deg, rgba(185, 181, 170, 0.18), var(--tarjeta) 60%);
-}
-
-.salud.sano h2 { color: var(--alga); }
-.salud.riesgo h2 { color: #b8962a; }
-.salud.blanqueado h2 { color: #8a857a; }
-
-/* Las 3 variables con su puntico verde o rojo */
-.indicadores {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0 0 10px;
-  padding: 0;
-  list-style: none;                 /* quita las viñetas */
-}
-
-.indicadores li {
-  padding: 4px 12px;
-  border-radius: 999px;
-  font-size: 13px;
-  background: var(--fondo-oscuro);
-  border: 1px solid var(--borde);
-}
-
-.indicadores li::before {
-  content: "●  ";                   /* el puntico antes del texto */
-  color: var(--borde);
-}
-
-.indicadores li.ideal::before { color: var(--alga); }
-.indicadores li.medio::before { color: #e0b030; }
-.indicadores li.critico::before { color: var(--error); }
-
-/* Leyenda de colores */
-.leyenda {
-  font-size: 12px;
-}
-
-.muestra {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  margin: 0 4px 0 10px;
-  border-radius: 50%;
-  vertical-align: middle;
-}
-
-.muestra.sano { background: var(--alga); }
-.muestra.riesgo { background: #e3d58c; }
-.muestra.blanqueado { background: #efede6; border: 1px solid #b9b5aa; }
-
-
-/* ---------- 14) CONSULTAS: RESUMEN DEL DÍA ---------- */
-/* Flechas ◀ ▶ para cambiar de día */
-.filtro .flecha {
-  padding: 12px 16px;
+  margin-top: 10px;
 }
 
 #resultadoDia {
-  max-width: 1000px;
-  margin: 20px auto 0;
+  margin-top: 20px;
 }
 
-/* Tarjetitas de resumen: tantas por fila como quepan */
+/* Tarjetitas de resumen del día */
 .resumen-dia {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -1148,34 +1826,50 @@ button.enlace:hover {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 16px;
+  padding: 18px;
 }
 
 .dato-dia strong {
-  font-size: 24px;
+  font-family: var(--letra-titulo);
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
+
 .dato-dia small {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--texto-suave);
 }
 
-.dato-dia.temp strong { color: var(--coral); }
-.dato-dia.ph strong { color: var(--turquesa); }
-.dato-dia.turb strong { color: var(--alga); }
-
-/* Tarjetita con el coral pequeño de ese día */
+/* Tarjetita con el coral pequeño de ese día (agua oscura) */
 .mini-coral {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
+  position: relative;
+  min-height: 118px;
+  padding: 18px;
+  overflow: hidden;
+  color: var(--blanco);
+  border: none;
+  background: var(--agua);
 }
 
 .mini-coral .coral {
-  width: 64px;
-  height: 64px;
-  flex-shrink: 0;
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  width: 104px;
+  height: 104px;
+}
+
+.mini-coral > div:last-child {
+  position: relative;
+  z-index: 1;
+  max-width: 62%;
+}
+
+.mini-coral .etiqueta {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .mini-coral strong {
@@ -1183,9 +1877,9 @@ button.enlace:hover {
   font-size: 16px;
 }
 
-.mini-coral.sano strong { color: var(--alga); }
-.mini-coral.riesgo strong { color: #b8962a; }
-.mini-coral.blanqueado strong { color: #8a857a; }
+.mini-coral.sano strong       { color: var(--alga-claro); }
+.mini-coral.riesgo strong     { color: var(--medio-claro); }
+.mini-coral.blanqueado strong { color: #f4efe4; }
 
 .grafica-dia {
   margin-bottom: 16px;
@@ -1198,152 +1892,610 @@ button.enlace:hover {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .cabeza-caja h3 {
   margin: 0;
-  font-size: 18px;
+  font-size: 17px;
 }
 
 .cabeza-caja .periodo {
   margin: 0;
 }
 
+.tabla-caja {
+  padding: 0;
+  overflow: hidden;
+}
+
 .tabla-caja .cabeza-caja {
-  padding: 16px 16px 0;
+  padding: 18px 20px 0;
 }
 
 .descargar {
-  width: auto;
-  margin: 0;
-  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  font-size: 14px;
+}
+
+/* La tabla se puede mover de lado en celular */
+.tabla-desliza {
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabla th,
+.tabla td {
+  padding: 12px 20px;
+  text-align: left;
+  border-bottom: 1px solid var(--borde);
+  white-space: nowrap;
+}
+
+.tabla th {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texto-suave);
+  background: var(--espuma);
+}
+
+.tabla tbody tr:hover {
+  background: rgba(31, 168, 176, 0.06);
+}
+
+/* La columna de la hora resaltada */
+.tabla td:first-child {
+  font-weight: 600;
+  color: var(--mar-oscuro);
 }
 
 /* Valores en la tabla: medio en amarillo, crítico en rojo */
 .tabla td.medio {
-  color: var(--medio);
+  color: var(--medio-texto);
   font-weight: 700;
+  background: rgba(242, 193, 78, 0.16);
 }
 
 .tabla td.critico {
-  color: var(--error);
+  color: var(--coral-texto);
   font-weight: 700;
+  background: rgba(229, 72, 77, 0.08);
 }
 
 .tabla-caja .nota {
-  padding: 0 16px 16px;
+  padding: 0 20px 18px;
 }
 
 
-/* ---------- 15) ANIMACIONES ---------- */
-/* Sube 10px a la mitad y vuelve (logo del login e ícono del ID) */
-@keyframes flotar {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-10px); }
+/* ---------- 15) PANEL: MI CUENTA Y SOBRE NOSOTROS ---------- */
+.tarjeta-cuenta {
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 28px;
 }
 
-/* Las ramas del coral se mueven un poquito a los lados */
+.tarjeta-cuenta h3 {
+  margin: 18px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--borde);
+  font-size: 17px;
+}
+
+.tarjeta-cuenta > label:first-child {
+  margin-top: 0;
+}
+
+.dato {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--mar-oscuro);
+}
+
+.tarjeta-cuenta button {
+  margin-top: 10px;
+}
+
+/* Sobre nosotros (dentro del panel) */
+.nosotros-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.bloque {
+  padding: 24px;
+}
+
+.bloque h3 {
+  margin: 0 0 10px;
+  font-family: var(--letra-titulo);
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.bloque p,
+.bloque li {
+  color: var(--texto-suave);
+}
+
+.bloque p {
+  margin: 0 0 10px;
+}
+
+.bloque ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.bloque strong {
+  color: var(--texto);
+}
+
+/* El flujo de datos resaltado */
+.bloque .flujo {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--espuma);
+  font-weight: 600;
+  color: var(--mar-oscuro);
+}
+
+.subtitulo-seccion {
+  margin: 36px 0 14px;
+  font-family: var(--letra-titulo);
+  font-weight: 600;
+  font-size: 22px;
+}
+
+.autores {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.autor {
+  padding: 22px;
+  text-align: center;
+  border-radius: 20px;
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+}
+
+.autor h3 {
+  margin: 12px 0 4px;
+  font-size: 17px;
+}
+
+.autor p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+
+.autor .pequeno {
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+/* Círculo con las iniciales */
+.autor .avatar {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--abismo);
+  background: var(--coral);
+}
+
+.autor:nth-child(3n + 2) .avatar { background: var(--turquesa); }
+.autor:nth-child(3n + 3) .avatar { background: var(--alga); }
+
+
+/* ---------- 16) EL CORAL (DIBUJO QUE SE BLANQUEA) ----------
+   El dibujo (SVG) lo pone el JS dentro de cada class="coral".
+   Todo su color sale de UNA variable: --blanqueo
+     0    = coral vivo (coral, turquesa, alga)
+     0.55 = pálido (en riesgo)
+     1    = blanco hueso (blanqueado)
+   Hoy la ponen las clases sano / riesgo / blanqueado que ya calcula
+   principal.js. Para un blanqueo gradual (por historial o por cuánto
+   tiempo se pasó un umbral) basta con:
+     elementoCoral.style.setProperty("--blanqueo", 0.3);
+   y el coral pasa suavemente a ese color.                           */
+
+/* @property deja que --blanqueo cambie con transición suave */
+@property --blanqueo {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+.coral {
+  --blanqueo: 1;                    /* sin datos: apagado */
+  --hueso: #c9d7db;                 /* sin datos: gris azulado */
+  --hueso-blanco: #f4efe4;          /* el blanco hueso del coral blanqueado */
+
+  /* Colores del coral sano */
+  --vivo-rama: #ff6b6b;
+  --vivo-abanico: #2fc4c9;
+  --vivo-cerebro: #3cc489;
+  --vivo-tubo: #ffa36b;
+  --vivo-polipo: #ffbdb2;
+
+  /* Cada color = mezcla entre el vivo y el hueso según --blanqueo */
+  --rama: color-mix(in oklab, var(--vivo-rama), var(--hueso) calc(var(--blanqueo) * 100%));
+  --abanico: color-mix(in oklab, var(--vivo-abanico), var(--hueso) calc(var(--blanqueo) * 100%));
+  --cerebro: color-mix(in oklab, var(--vivo-cerebro), var(--hueso) calc(var(--blanqueo) * 100%));
+  --tubo: color-mix(in oklab, var(--vivo-tubo), var(--hueso) calc(var(--blanqueo) * 100%));
+  --polipo: color-mix(in oklab, var(--vivo-polipo), #ffffff calc(var(--blanqueo) * 100%));
+
+  transition: --blanqueo 1.6s ease;
+}
+
+.sano .coral       { --blanqueo: 0;    --hueso: var(--hueso-blanco); }
+.riesgo .coral     { --blanqueo: 0.55; --hueso: var(--hueso-blanco); }
+.blanqueado .coral { --blanqueo: 1;    --hueso: var(--hueso-blanco); }
+
+.coral svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Abanico de mar (atrás) */
+.coral .abanico path {
+  fill: none;
+  stroke: var(--abanico);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+
+.coral .abanico .velo {
+  fill: var(--abanico);
+  fill-opacity: 0.12;
+  stroke: none;
+}
+
+.coral .abanico .malla {
+  stroke-width: 1.4;
+  opacity: 0.7;
+}
+
+/* Ramas del coral principal */
+.coral .rama path {
+  fill: none;
+  stroke: var(--rama);
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+
+.coral .rama path.fina {
+  stroke-width: 8.5;
+}
+
+.coral .polipo {
+  fill: var(--polipo);
+}
+
+/* Roca del fondo */
+.coral .roca {
+  fill: #a8987c;
+}
+
+.coral .roca-luz {
+  fill: none;
+  stroke: #cbbd9f;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+/* Esponjas de tubo y coral cerebro (adelante) */
+.coral .tubos rect {
+  fill: var(--tubo);
+}
+
+.coral .tubos .boca {
+  fill: color-mix(in oklab, var(--tubo), #062a3a 45%);
+}
+
+.coral .cerebro .cupula {
+  fill: var(--cerebro);
+}
+
+.coral .cerebro .surco {
+  fill: none;
+  stroke: color-mix(in oklab, var(--cerebro), #062a3a 30%);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+/* Movimiento: ramas y abanico se mecen con la corriente */
+.coral .rama {
+  transform-origin: 104px 176px;
+  animation: mecerse 6s ease-in-out infinite;
+}
+
+.coral .r2 { animation-delay: -2s; }
+.coral .r3 { animation-delay: -4s; }
+
+.coral .abanico {
+  transform-origin: 62px 174px;
+  animation: mecerse 8s ease-in-out infinite;
+  animation-delay: -3s;
+}
+
+/* Burbujas que suben */
+.coral .burbuja {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.75);
+  stroke-width: 1.5;
+  opacity: 0;
+  animation: subir 4.5s ease-in infinite;
+}
+
+.coral .b2 { animation-delay: 1.5s; }
+.coral .b3 { animation-delay: 3s; }
+
+
+/* ---------- 17) ANIMACIONES ---------- */
 @keyframes mecerse {
   0%, 100% { transform: rotate(-2deg); }
   50%      { transform: rotate(2deg); }
 }
 
-/* Las burbujas aparecen, suben y desaparecen */
+@keyframes mecer {
+  from { transform: rotate(-2.4deg); }
+  to   { transform: rotate(2.4deg); }
+}
+
 @keyframes subir {
   0%   { opacity: 0; transform: translateY(0); }
-  20%  { opacity: 0.8; }
+  20%  { opacity: 0.9; }
   100% { opacity: 0; transform: translateY(-70px); }
 }
 
-/* Los popups entran desde un poco abajo, de invisibles a visibles */
+@keyframes subir-agua {
+  0%   { opacity: 0; transform: translate(0, 0); }
+  10%  { opacity: 0.8; }
+  50%  { transform: translate(14px, -50vh); }
+  100% { opacity: 0; transform: translate(-8px, -105vh); }
+}
+
+@keyframes brillar {
+  from { opacity: 0.35; transform: rotate(17deg) translateX(-24px); }
+  to   { opacity: 0.95; transform: rotate(12deg) translateX(30px); }
+}
+
+@keyframes nadar {
+  from { transform: translateX(110vw); }
+  to   { transform: translateX(-30vw); }
+}
+
+@keyframes flotar-pez {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+
+@keyframes viajar {
+  0%   { left: calc(100% / 12); opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { left: calc(100% - 100% / 12 - 12px); opacity: 0; }
+}
+
+@keyframes sonar {
+  from { transform: scale(1); opacity: 0.8; }
+  to   { transform: scale(1.9); opacity: 0; }
+}
+
 @keyframes aparecer {
   from { opacity: 0; transform: translateY(15px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 
-/* ---------- 16) CELULAR (pantallas de 800px o menos) ---------- */
-/* @media: estas reglas solo aplican en pantallas pequeñas (responsive) */
-@media (max-width: 800px) {
+/* ---------- 18) CELULAR Y TABLET ---------- */
+@media (max-width: 960px) {
 
-  /* Login: una sola columna, primero el logo y debajo el login */
-  .portada {
+  /* Portada */
+  .nav-sitio {
+    display: none;
+  }
+
+  .boton-nav {
+    margin-left: auto;
+  }
+
+  .hero {
+    align-items: flex-start;
+    padding-top: 104px;
+  }
+
+  .hero-contenido {
     grid-template-columns: 1fr;
-    gap: 24px;
-    padding: 24px 16px;
+    gap: 36px;
   }
 
-  .lado-info {
-    order: -1;
+  .tarjeta-login {
+    max-width: 440px;
   }
 
-  .lado-info h1 {
-    font-size: 40px;
+  .variables {
+    grid-template-columns: 1fr;
+    gap: 40px;
   }
 
-  .logo {
-    width: 120px;
+  .variable,
+  .variable:first-child,
+  .variable:last-child {
+    padding: 0;
+    border-left: none;
   }
 
-  /* Página principal: la barra lateral pasa arriba */
+  .variable + .variable {
+    padding-top: 40px;
+    border-top: 1px solid var(--borde);
+  }
+
+  .demo {
+    grid-template-columns: 1fr;
+  }
+
+  .ventana-coral {
+    width: min(100%, 380px);
+    margin: 0 auto;
+  }
+
+  /* La ruta del dato pasa a ser vertical */
+  .ruta {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    text-align: left;
+  }
+
+  .ruta li {
+    display: grid;
+    grid-template-columns: 46px 1fr;
+    column-gap: 18px;
+  }
+
+  .ruta .paso {
+    grid-row: span 2;
+    margin: 0;
+  }
+
+  .ruta::before {
+    top: 23px;
+    bottom: 23px;
+    left: 22px;
+    right: auto;
+    width: 2px;
+    height: auto;
+    background: repeating-linear-gradient(180deg, var(--turquesa) 0 8px, transparent 8px 16px);
+  }
+
+  .ruta::after {
+    left: 17px;
+    animation-name: viajar-vertical;
+  }
+
+  .nosotros {
+    grid-template-columns: 1fr;
+  }
+
+  .pie-contenido {
+    grid-template-columns: 1fr;
+  }
+}
+
+@keyframes viajar-vertical {
+  0%   { top: 17px; opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { top: calc(100% - 29px); opacity: 0; }
+}
+
+@media (max-width: 860px) {
+
+  /* Panel: la barra lateral pasa arriba */
   .contenedor {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .lateral {
     position: static;
     height: auto;
-    width: 100%;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
     gap: 12px;
-    border-right: none;
-    border-bottom: 1px solid var(--borde);
+    padding: 14px 16px;
   }
 
   .menu {
+    order: 3;
+    width: 100%;
     flex-direction: row;
+    overflow-x: auto;
   }
 
-  .menu button,
-  .sesion button {
+  .pestana {
     width: auto;
+    white-space: nowrap;
   }
 
   .sesion {
     margin: 0 0 0 auto;
+    padding: 0;
   }
 
-  .usuario {
-    display: none;                  /* en celular no cabe el correo */
+  .usuario,
+  .arrecife-lateral {
+    display: none;
   }
 
   .panel {
-    padding: 20px 16px;
+    padding: 22px 16px 40px;
   }
 
-  /* El campo del ID y sus botones uno debajo del otro */
   .fila-id {
     flex-direction: column;
   }
 
-  .fila-id button,
-  .suscribir,
-  .cambiar-id {
-    width: 100%;
-    margin: 0;
-  }
-
   .dato-resumen {
+    padding-right: 0;
     border-right: none;
   }
 
-  /* La tarjeta del coral: el dibujo arriba y el texto debajo */
+  .suscribir {
+    margin-left: 0;
+  }
+
+  .suscribir,
+  .cambiar-id {
+    flex: 1 1 200px;
+  }
+
+  /* El acuario: el coral arriba y el texto debajo */
   .salud {
-    flex-direction: column;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 24px 22px 0;
     text-align: center;
+  }
+
+  .salud .coral {
+    width: 220px;
+    height: 220px;
+    margin: 0 auto -8px;
+    order: 2;
+  }
+
+  .salud p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .salud-texto {
+    padding-bottom: 0;
   }
 
   .indicadores {
@@ -1351,4 +2503,41 @@ button.enlace:hover {
   }
 }
 
+@media (max-width: 520px) {
+  body {
+    font-size: 16px;
+  }
 
+  .barra-sitio .marca-sitio span {
+    display: none;
+  }
+
+  .tarjeta-login {
+    padding: 24px;
+  }
+
+  .mini-datos strong {
+    font-size: 15px;
+  }
+}
+
+
+/* ---------- 19) MENOS MOVIMIENTO ---------- */
+/* Si la persona pidió en su sistema "reducir movimiento", todo queda quieto */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .cardumen,
+  .burbuja-agua {
+    display: none;
+  }
+}
