@@ -4,27 +4,45 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Coralis | Panel</title>
+  <meta name="theme-color" content="#062a3a">
+  <link rel="icon" href="coralis-emblema.png">
+
+  <!-- Fuentes guardadas en el repo (carpeta fuentes/) -->
+  <link rel="preload" href="fuentes/unbounded.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fuentes/figtree.woff2" as="font" type="font/woff2" crossorigin>
 
   <!-- El mismo CSS de la página de login -->
   <link rel="stylesheet" href="estilo.css">
 </head>
-<body>
+<body class="pagina-panel">
 
   <div class="contenedor">
 
   <!-- ========== BARRA LATERAL (IZQUIERDA) ========== -->
   <aside class="lateral">
     <div class="marca">
-      <img src="coralis.png" alt="Logo de Coralis" class="logo-barra">
+      <img src="coralis-emblema.png" alt="Logo de Coralis" class="logo-barra">
       <span class="nombre">Coralis</span>
     </div>
 
-    <!-- Menú para cambiar de sección -->
-    <nav class="menu">
-      <button type="button" class="pestana activa" id="btnInicio">📊 Inicio</button>
-      <button type="button" class="pestana" id="btnConsultas">📅 Consultas</button>
-      <button type="button" class="pestana" id="btnNosotros">🌊 Sobre nosotros</button>
-      <button type="button" class="pestana" id="btnCuenta">👤 Mi cuenta</button>
+    <!-- Menú para cambiar de sección (los id los usa principal.js) -->
+    <nav class="menu" aria-label="Secciones del panel">
+      <button type="button" class="pestana activa" id="btnInicio">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 4v15h16"/><path d="M8 14.5l3.5-4 3 2.5L19 7.5"/></svg>
+        <span>Inicio</span>
+      </button>
+      <button type="button" class="pestana" id="btnConsultas">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>
+        <span>Consultas</span>
+      </button>
+      <button type="button" class="pestana" id="btnNosotros">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 10c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2c1.4 0 2.1.6 3 1.2"/><path d="M3 16c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2c1.4 0 2.1.6 3 1.2"/></svg>
+        <span>Sobre nosotros</span>
+      </button>
+      <button type="button" class="pestana" id="btnCuenta">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 19.5c1.2-3.4 3.9-5 7-5s5.8 1.6 7 5"/></svg>
+        <span>Mi cuenta</span>
+      </button>
     </nav>
 
     <!-- Abajo del todo: correo y cerrar sesión -->
@@ -32,6 +50,8 @@
       <span class="usuario" id="correoUsuario"></span>
       <button type="button" class="secundario" id="btnSalir">Cerrar sesión</button>
     </div>
+
+    <svg class="arrecife-lateral" viewBox="0 0 240 120" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false"><g fill="none" stroke-linecap="round"><g class="mece" style="--d:-3.9s;--t:9s"><path d="M22 118 Q19.9 96 13.5 74.7" stroke="#1fa8b0" stroke-width="8.6" /><path d="M13.5 74.7 Q8.8 61.5 1.1 49.5" stroke="#1fa8b0" stroke-width="6.4" /><path d="M1.1 49.5 Q-0.9 39 -1.5 28.3" stroke="#1fa8b0" stroke-width="4.7" /><path d="M-1.5 28.3 Q-4.2 21.4 -5.9 14.2" stroke="#1fa8b0" stroke-width="3.5" /><path d="M-1.5 28.3 Q1 21.6 4.9 15.5" stroke="#1fa8b0" stroke-width="3.5" /><path d="M1.1 49.5 Q-5.7 41.7 -13.3 34.7" stroke="#1fa8b0" stroke-width="4.7" /><path d="M-13.3 34.7 Q-19.5 31.6 -25.6 28.1" stroke="#1fa8b0" stroke-width="3.5" /><path d="M-13.3 34.7 Q-14.5 26.8 -14.1 18.8" stroke="#1fa8b0" stroke-width="3.5" /><path d="M1.1 49.5 Q-0.4 39.4 -1.1 29.2" stroke="#1fa8b0" stroke-width="4.7" /><path d="M-1.1 29.2 Q-6.3 24.9 -12 21.1" stroke="#1fa8b0" stroke-width="3.5" /><path d="M-1.1 29.2 Q1.4 21.7 5.5 14.9" stroke="#1fa8b0" stroke-width="3.5" /><path d="M-1.1 29.2 Q1.8 23.5 4.2 17.6" stroke="#1fa8b0" stroke-width="3.5" /><path d="M13.5 74.7 Q20.1 61.3 28.3 48.8" stroke="#1fa8b0" stroke-width="6.4" /><path d="M28.3 48.8 Q29.3 38 29.9 27.2" stroke="#1fa8b0" stroke-width="4.7" /><path d="M29.9 27.2 Q28 20.2 27.1 13" stroke="#1fa8b0" stroke-width="3.5" /><path d="M29.9 27.2 Q30.3 19.6 32.6 12.1" stroke="#1fa8b0" stroke-width="3.5" /><path d="M28.3 48.8 Q35.1 40.2 42.6 32.2" stroke="#1fa8b0" stroke-width="4.7" /><path d="M42.6 32.2 Q48 27.3 53.1 22.3" stroke="#1fa8b0" stroke-width="3.5" /><path d="M42.6 32.2 Q46.4 25 49.4 17.5" stroke="#1fa8b0" stroke-width="3.5" /><circle cx="-5.9" cy="14.2" r="2.2" fill="#1fa8b0" /><circle cx="4.9" cy="15.5" r="2.2" fill="#1fa8b0" /><circle cx="-25.6" cy="28.1" r="2.2" fill="#1fa8b0" /><circle cx="-14.1" cy="18.8" r="2.2" fill="#1fa8b0" /><circle cx="-12" cy="21.1" r="2.2" fill="#1fa8b0" /><circle cx="5.5" cy="14.9" r="2.2" fill="#1fa8b0" /><circle cx="4.2" cy="17.6" r="2.2" fill="#1fa8b0" /><circle cx="27.1" cy="13" r="2.2" fill="#1fa8b0" /><circle cx="32.6" cy="12.1" r="2.2" fill="#1fa8b0" /><circle cx="53.1" cy="22.3" r="2.2" fill="#1fa8b0" /><circle cx="49.4" cy="17.5" r="2.2" fill="#1fa8b0" /></g><g class="mece lento" style="--d:-5.4s"><path d="M70 118 Q39.9 94.4 3.1 78.6" stroke="#1fa8b0" stroke-width="2.3" /><path d="M70 118 Q50.4 94.6 26.5 79.1" stroke="#1fa8b0" stroke-width="2.3" /><path d="M70 118 Q52.2 80.2 30.4 55" stroke="#1fa8b0" stroke-width="2.3" /><path d="M70 118 Q63.2 81.7 54.8 57.5" stroke="#1fa8b0" stroke-width="2.3" /><path d="M70 118 Q69.4 81.4 68.6 57" stroke="#1fa8b0" stroke-width="2.3" /><path d="M70 118 Q76.6 84.3 84.7 61.9" stroke="#1fa8b0" stroke-width="2.3" /><path d="M70 118 Q88.2 78.4 110.5 52" stroke="#1fa8b0" stroke-width="2.3" /><path d="M70 118 Q94.9 88.8 125.4 69.3" stroke="#1fa8b0" stroke-width="2.3" /><path d="M70 118 Q93.2 102.7 121.5 92.5" stroke="#1fa8b0" stroke-width="2.3" /><path d="M44.1 103 A29.9 28.4 0 0 1 95.9 103" stroke="#1fa8b0" stroke-width="1.2" opacity=".7" /><path d="M29.7 94.7 A46.5 44.2 0 0 1 110.3 94.7" stroke="#1fa8b0" stroke-width="1.2" opacity=".7" /><path d="M18.2 88.1 A59.9 56.9 0 0 1 121.8 88.1" stroke="#1fa8b0" stroke-width="1.2" opacity=".7" /></g><g class="mece" style="--d:-4.3s;--t:8.5s"><path d="M120 118 Q122.5 95.8 130.1 74.4" stroke="#1fa8b0" stroke-width="8.8" /><path d="M130.1 74.4 Q122.3 58.6 115.3 42.3" stroke="#1fa8b0" stroke-width="6.5" /><path d="M115.3 42.3 Q106.3 35.1 97.1 28.1" stroke="#1fa8b0" stroke-width="4.8" /><path d="M97.1 28.1 Q89 25.9 80.6 25.1" stroke="#1fa8b0" stroke-width="3.5" /><path d="M97.1 28.1 Q92.5 21.7 87.7 15.3" stroke="#1fa8b0" stroke-width="3.5" /><path d="M115.3 42.3 Q111.5 29.4 110.9 15.7" stroke="#1fa8b0" stroke-width="4.8" /><path d="M110.9 15.7 Q100.9 11.8 90.7 8.3" stroke="#1fa8b0" stroke-width="3.5" /><path d="M110.9 15.7 Q104.9 9.6 97.7 5" stroke="#1fa8b0" stroke-width="3.5" /><path d="M110.9 15.7 Q107.1 6.4 101.8 -2.2" stroke="#1fa8b0" stroke-width="3.5" /><path d="M130.1 74.4 Q122.8 60.4 113.8 47.2" stroke="#1fa8b0" stroke-width="6.5" /><path d="M113.8 47.2 Q105 40.2 97.1 32" stroke="#1fa8b0" stroke-width="4.8" /><path d="M97.1 32 Q90.5 28.6 83.4 26.2" stroke="#1fa8b0" stroke-width="3.5" /><path d="M97.1 32 Q90.9 26.9 84 22.6" stroke="#1fa8b0" stroke-width="3.5" /><path d="M113.8 47.2 Q110.6 36 107 25" stroke="#1fa8b0" stroke-width="4.8" /><path d="M107 25 Q103.3 18.7 98.8 12.8" stroke="#1fa8b0" stroke-width="3.5" /><path d="M107 25 Q104.3 17.8 100.6 11" stroke="#1fa8b0" stroke-width="3.5" /><path d="M130.1 74.4 Q138.7 62.8 144.6 49.4" stroke="#1fa8b0" stroke-width="6.5" /><path d="M144.6 49.4 Q150.8 39.8 156.6 29.8" stroke="#1fa8b0" stroke-width="4.8" /><path d="M156.6 29.8 Q160 21.7 164.3 14" stroke="#1fa8b0" stroke-width="3.5" /><path d="M156.6 29.8 Q160.3 23.5 163.1 16.6" stroke="#1fa8b0" stroke-width="3.5" /><path d="M156.6 29.8 Q165.4 27.6 174.5 27.3" stroke="#1fa8b0" stroke-width="3.5" /><path d="M144.6 49.4 Q152.7 42.6 161.8 37" stroke="#1fa8b0" stroke-width="4.8" /><path d="M161.8 37 Q163 29.7 163.1 22.2" stroke="#1fa8b0" stroke-width="3.5" /><path d="M161.8 37 Q168.8 32.8 175.5 28.1" stroke="#1fa8b0" stroke-width="3.5" /><path d="M161.8 37 Q168.9 34.2 176.4 32.7" stroke="#1fa8b0" stroke-width="3.5" /><circle cx="80.6" cy="25.1" r="2.2" fill="#1fa8b0" /><circle cx="87.7" cy="15.3" r="2.2" fill="#1fa8b0" /><circle cx="90.7" cy="8.3" r="2.2" fill="#1fa8b0" /><circle cx="97.7" cy="5" r="2.2" fill="#1fa8b0" /><circle cx="101.8" cy="-2.2" r="2.2" fill="#1fa8b0" /><circle cx="83.4" cy="26.2" r="2.2" fill="#1fa8b0" /><circle cx="84" cy="22.6" r="2.2" fill="#1fa8b0" /><circle cx="98.8" cy="12.8" r="2.2" fill="#1fa8b0" /><circle cx="100.6" cy="11" r="2.2" fill="#1fa8b0" /><circle cx="164.3" cy="14" r="2.2" fill="#1fa8b0" /><circle cx="163.1" cy="16.6" r="2.2" fill="#1fa8b0" /><circle cx="174.5" cy="27.3" r="2.2" fill="#1fa8b0" /><circle cx="163.1" cy="22.2" r="2.2" fill="#1fa8b0" /><circle cx="175.5" cy="28.1" r="2.2" fill="#1fa8b0" /><circle cx="176.4" cy="32.7" r="2.2" fill="#1fa8b0" /></g><path d="M150 120 C150 98 190 98 190 120 Z" fill="#1fa8b0" stroke="none" /><path d="M153.6 115.6 Q156.3 118.9 159.1 115.6 Q161.8 112.3 164.5 115.6 Q167.3 118.9 170 115.6 Q172.7 112.3 175.5 115.6 Q178.2 118.9 180.9 115.6 Q183.7 112.3 186.4 115.6" stroke="#0a3d52" stroke-width="1.4" /><path d="M157.2 111.2 Q159.3 114.5 161.5 111.2 Q163.6 107.9 165.7 111.2 Q167.9 114.5 170 111.2 Q172.1 107.9 174.3 111.2 Q176.4 114.5 178.5 111.2 Q180.7 107.9 182.8 111.2" stroke="#0a3d52" stroke-width="1.4" /><path d="M160.8 106.8 Q162.3 110.1 163.9 106.8 Q165.4 103.5 166.9 106.8 Q168.5 110.1 170 106.8 Q171.5 103.5 173.1 106.8 Q174.6 110.1 176.1 106.8 Q177.7 103.5 179.2 106.8" stroke="#0a3d52" stroke-width="1.4" /><g class="mece" style="--d:-4.2s;--t:9.5s"><path d="M215 118 Q214.4 96.2 212.8 74.5" stroke="#1fa8b0" stroke-width="8.5" /><path d="M212.8 74.5 Q201.5 61.3 191.4 47.2" stroke="#1fa8b0" stroke-width="6.3" /><path d="M191.4 47.2 Q183.9 36.7 176.2 26.4" stroke="#1fa8b0" stroke-width="4.7" /><path d="M176.2 26.4 Q169.9 18.4 162.6 11.3" stroke="#1fa8b0" stroke-width="3.5" /><path d="M176.2 26.4 Q167.8 20.8 158.1 17.2" stroke="#1fa8b0" stroke-width="3.5" /><path d="M191.4 47.2 Q190 36.2 190.3 25" stroke="#1fa8b0" stroke-width="4.7" /><path d="M190.3 25 Q190.6 17.1 192.3 9.2" stroke="#1fa8b0" stroke-width="3.5" /><path d="M190.3 25 Q187.8 17.2 184.7 9.6" stroke="#1fa8b0" stroke-width="3.5" /><path d="M212.8 74.5 Q218.4 58.9 223.8 43.3" stroke="#1fa8b0" stroke-width="6.3" /><path d="M223.8 43.3 Q223.2 32.8 223.6 22.3" stroke="#1fa8b0" stroke-width="4.7" /><path d="M223.6 22.3 Q221.2 14.5 219.3 6.6" stroke="#1fa8b0" stroke-width="3.5" /><path d="M223.6 22.3 Q222.4 15.2 222.2 8" stroke="#1fa8b0" stroke-width="3.5" /><path d="M223.8 43.3 Q228.4 34 234.5 25.6" stroke="#1fa8b0" stroke-width="4.7" /><path d="M234.5 25.6 Q232.8 18.4 230.6 11.4" stroke="#1fa8b0" stroke-width="3.5" /><path d="M234.5 25.6 Q239.3 20.7 243.5 15.1" stroke="#1fa8b0" stroke-width="3.5" /><path d="M223.8 43.3 Q231.8 32.8 237.7 20.9" stroke="#1fa8b0" stroke-width="4.7" /><path d="M237.7 20.9 Q245.5 14.6 252.9 7.8" stroke="#1fa8b0" stroke-width="3.5" /><path d="M237.7 20.9 Q246.4 18.2 255.4 16.5" stroke="#1fa8b0" stroke-width="3.5" /><path d="M212.8 74.5 Q219.9 60.2 230.1 47.6" stroke="#1fa8b0" stroke-width="6.3" /><path d="M230.1 47.6 Q227.1 35.7 223.6 23.8" stroke="#1fa8b0" stroke-width="4.7" /><path d="M223.6 23.8 Q215.4 18.8 206.5 15.1" stroke="#1fa8b0" stroke-width="3.5" /><path d="M223.6 23.8 Q218.7 16.6 213.3 9.7" stroke="#1fa8b0" stroke-width="3.5" /><path d="M223.6 23.8 Q226.1 14.6 229.6 5.5" stroke="#1fa8b0" stroke-width="3.5" /><path d="M230.1 47.6 Q229.2 36.8 228.6 26" stroke="#1fa8b0" stroke-width="4.7" /><path d="M228.6 26 Q228.4 18.2 228.3 10.3" stroke="#1fa8b0" stroke-width="3.5" /><path d="M228.6 26 Q229.2 18.6 229.1 11" stroke="#1fa8b0" stroke-width="3.5" /><path d="M230.1 47.6 Q236.1 39.1 243.5 31.6" stroke="#1fa8b0" stroke-width="4.7" /><path d="M243.5 31.6 Q246.7 24.7 249.2 17.5" stroke="#1fa8b0" stroke-width="3.5" /><path d="M243.5 31.6 Q250.3 29 257.7 27.7" stroke="#1fa8b0" stroke-width="3.5" /><circle cx="162.6" cy="11.3" r="2.1" fill="#1fa8b0" /><circle cx="158.1" cy="17.2" r="2.1" fill="#1fa8b0" /><circle cx="192.3" cy="9.2" r="2.1" fill="#1fa8b0" /><circle cx="184.7" cy="9.6" r="2.1" fill="#1fa8b0" /><circle cx="219.3" cy="6.6" r="2.1" fill="#1fa8b0" /><circle cx="222.2" cy="8" r="2.1" fill="#1fa8b0" /><circle cx="230.6" cy="11.4" r="2.1" fill="#1fa8b0" /><circle cx="243.5" cy="15.1" r="2.1" fill="#1fa8b0" /><circle cx="252.9" cy="7.8" r="2.1" fill="#1fa8b0" /><circle cx="255.4" cy="16.5" r="2.1" fill="#1fa8b0" /><circle cx="206.5" cy="15.1" r="2.1" fill="#1fa8b0" /><circle cx="213.3" cy="9.7" r="2.1" fill="#1fa8b0" /><circle cx="229.6" cy="5.5" r="2.1" fill="#1fa8b0" /><circle cx="228.3" cy="10.3" r="2.1" fill="#1fa8b0" /><circle cx="229.1" cy="11" r="2.1" fill="#1fa8b0" /><circle cx="249.2" cy="17.5" r="2.1" fill="#1fa8b0" /><circle cx="257.7" cy="27.7" r="2.1" fill="#1fa8b0" /></g></g></svg>
   </aside>
 
 
@@ -44,7 +64,9 @@
 
       <!-- Paso 1: escribir el ID del dispositivo (Raspberry) -->
       <form class="tarjeta buscar-id" id="formId">
-        <span class="icono-grande">📡</span>
+        <span class="icono-grande" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false"><path d="M12 13v8"/><circle cx="12" cy="11" r="2"/><path d="M8.5 7.5a5 5 0 0 0 0 7M15.5 7.5a5 5 0 0 1 0 7M5.6 4.6a9 9 0 0 0 0 12.8M18.4 4.6a9 9 0 0 1 0 12.8"/></svg>
+        </span>
         <h2>Elige tu dispositivo</h2>
         <p class="texto-id">Escribe el ID de la Raspberry para ver sus mediciones.</p>
         <label for="idDispositivo">ID del dispositivo</label>
@@ -77,7 +99,8 @@
         </div>
         <p class="mensaje" id="msgSuscripcion"></p>
 
-        <!-- Tarjeta grande del coral: cambia de color según los datos -->
+        <!-- Tarjeta grande del coral: cambia de color según los datos.
+             El color lo controla la variable CSS --blanqueo (0 = vivo, 1 = blanco). -->
         <div class="tarjeta salud" id="tarjetaSalud">
           <div class="coral"></div>
           <div class="salud-texto">
@@ -90,9 +113,9 @@
               <li id="indTurb">Turbidez</li>
             </ul>
             <p class="leyenda">
-              <span class="muestra sano"></span> Saludable (todo ideal)
-              <span class="muestra riesgo"></span> En riesgo (algo en medio)
-              <span class="muestra blanqueado"></span> Blanqueado (algo crítico)
+              <span class="item-leyenda"><span class="muestra sano"></span> Saludable (todo ideal)</span>
+              <span class="item-leyenda"><span class="muestra riesgo"></span> En riesgo (algo en medio)</span>
+              <span class="item-leyenda"><span class="muestra blanqueado"></span> Blanqueado (algo crítico)</span>
             </p>
           </div>
         </div>
@@ -109,7 +132,7 @@
           <!-- Tarjeta de temperatura -->
           <article class="tarjeta temp">
             <div class="cabeza">
-              <span class="icono">🌡️</span>
+              <span class="icono" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M14 14.8V5a2 2 0 1 0-4 0v9.8a4 4 0 1 0 4 0Z"/><path d="M12 9v7"/></svg></span>
               <div>
                 <h3>Temperatura</h3>
                 <p class="subtitulo">Última lectura</p>
@@ -129,7 +152,7 @@
           <!-- Tarjeta de pH -->
           <article class="tarjeta ph">
             <div class="cabeza">
-              <span class="icono">🧪</span>
+              <span class="icono" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 3s-6 6.5-6 11a6 6 0 0 0 12 0c0-4.5-6-11-6-11Z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/></svg></span>
               <div>
                 <h3>pH</h3>
                 <p class="subtitulo">Última lectura</p>
@@ -149,7 +172,7 @@
           <!-- Tarjeta de turbidez -->
           <article class="tarjeta turb">
             <div class="cabeza">
-              <span class="icono">🌊</span>
+              <span class="icono" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M3 8.5c2 0 2-1.5 4.5-1.5S10 8.5 12 8.5s2-1.5 4.5-1.5S19 8.5 21 8.5"/><path d="M3 13.5c2 0 2-1.5 4.5-1.5s2.5 1.5 4.5 1.5 2-1.5 4.5-1.5 2.5 1.5 4.5 1.5"/><path d="M7 18h.01M12 17h.01M17 18.5h.01"/></svg></span>
               <div>
                 <h3>Turbidez</h3>
                 <p class="subtitulo">Última lectura</p>
@@ -167,7 +190,7 @@
           </article>
 
         </div>
-        <p class="nota">Cada punto de la gráfica es el promedio de ese día. Rangos ideales: pH 7.89–8.08, temperatura 25–27 °C, turbidez cercana a 0 NTU.</p>
+        <p class="nota">Cada punto de la gráfica es el promedio de ese día. La franja verde es el rango ideal: pH 7.89–8.08, temperatura 25–27 °C, turbidez 0–3 NTU.</p>
       </div>
     </section>
 
@@ -179,12 +202,16 @@
 
       <!-- Escoger el día: flechas para moverse entre días con datos -->
       <form class="filtro" id="formConsulta">
-        <button type="button" class="secundario flecha" id="btnDiaAnterior" title="Día anterior con datos">◀</button>
+        <button type="button" class="secundario flecha" id="btnDiaAnterior" title="Día anterior con datos" aria-label="Día anterior con datos">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
         <div>
           <label for="fechaConsulta">Día</label>
           <input type="date" id="fechaConsulta" required>
         </div>
-        <button type="button" class="secundario flecha" id="btnDiaSiguiente" title="Día siguiente con datos">▶</button>
+        <button type="button" class="secundario flecha" id="btnDiaSiguiente" title="Día siguiente con datos" aria-label="Día siguiente con datos">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
         <button type="submit" id="btnConsultar">Consultar</button>
       </form>
 
@@ -203,22 +230,22 @@
             </div>
           </div>
           <div class="tarjeta dato-dia">
-            <span class="etiqueta">🕒 Lecturas</span>
+            <span class="etiqueta">Lecturas</span>
             <strong id="diaCantidad">--</strong>
             <small id="diaRango"></small>
           </div>
           <div class="tarjeta dato-dia temp">
-            <span class="etiqueta">🌡️ Temperatura</span>
+            <span class="etiqueta">Temperatura</span>
             <strong id="diaTemp">--</strong>
             <small id="diaTempRango"></small>
           </div>
           <div class="tarjeta dato-dia ph">
-            <span class="etiqueta">🧪 pH</span>
+            <span class="etiqueta">pH</span>
             <strong id="diaPh">--</strong>
             <small id="diaPhRango"></small>
           </div>
           <div class="tarjeta dato-dia turb">
-            <span class="etiqueta">🌊 Turbidez</span>
+            <span class="etiqueta">Turbidez</span>
             <strong id="diaTurb">--</strong>
             <small id="diaTurbRango"></small>
           </div>
@@ -241,20 +268,25 @@
         <div class="tarjeta tabla-caja">
           <div class="cabeza-caja">
             <h3>Lecturas de la Raspberry</h3>
-            <button type="button" class="secundario descargar" id="btnDescargar">⬇ Descargar CSV</button>
+            <button type="button" class="secundario descargar" id="btnDescargar">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></svg>
+              Descargar CSV
+            </button>
           </div>
-          <table class="tabla">
-            <thead>
-              <tr>
-                <th>Hora de la toma (timestamp)</th>
-                <th>Secuencia</th>
-                <th>Temperatura (°C)</th>
-                <th>pH</th>
-                <th>Turbidez (NTU)</th>
-              </tr>
-            </thead>
-            <tbody id="cuerpoTabla"></tbody>
-          </table>
+          <div class="tabla-desliza">
+            <table class="tabla">
+              <thead>
+                <tr>
+                  <th>Hora de la toma (timestamp)</th>
+                  <th>Secuencia</th>
+                  <th>Temperatura (°C)</th>
+                  <th>pH</th>
+                  <th>Turbidez (NTU)</th>
+                </tr>
+              </thead>
+              <tbody id="cuerpoTabla"></tbody>
+            </table>
+          </div>
           <p class="nota">Valores en amarillo: nivel medio. En rojo: nivel crítico.</p>
         </div>
       </div>
@@ -272,13 +304,13 @@
 
         <h3>Cambiar contraseña</h3>
         <label for="claveActual">Contraseña actual</label>
-        <input type="password" id="claveActual" placeholder="Tu contraseña de ahora">
+        <input type="password" id="claveActual" placeholder="Tu contraseña de ahora" autocomplete="current-password">
 
         <label for="claveNueva">Contraseña nueva</label>
-        <input type="password" id="claveNueva" placeholder="Contraseña nueva">
+        <input type="password" id="claveNueva" placeholder="Contraseña nueva" autocomplete="new-password">
 
         <label for="claveRepetida">Repite la contraseña nueva</label>
-        <input type="password" id="claveRepetida" placeholder="Repite la contraseña">
+        <input type="password" id="claveRepetida" placeholder="Repite la contraseña" autocomplete="new-password">
 
         <p class="reglas">Mínimo 8 caracteres, un número y un carácter especial (!@#$%...)</p>
         <p class="mensaje" id="msgCuenta"></p>
@@ -290,84 +322,100 @@
 
 
     <!-- ========== SECCIÓN 4: SOBRE NOSOTROS ========== -->
+    <!-- Llena lo que está entre [corchetes] -->
     <section id="nosotros" hidden>
       <h1>Sobre nosotros</h1>
-      <p class="estado">[Una frase corta que resuma Coralis. Ej: Monitoreo de la calidad del agua para cuidar los corales.]</p>
+      <p class="estado">Monitoreo de la calidad del agua para cuidar los corales.</p>
 
-      <!-- El proyecto -->
-      <article class="tarjeta bloque">
-        <h3>🪸 El proyecto</h3>
-        <p>[¿Qué es Coralis? ¿Qué problema resuelve? ¿Por qué es importante cuidar los corales?]</p>
-      </article>
+      <div class="nosotros-panel">
 
-      <!-- El producto -->
-      <article class="tarjeta bloque">
-        <h3>📡 El producto</h3>
-        <p>[¿Qué es el dispositivo? ¿Dónde se instala? ¿Qué mide?]</p>
-        <ul>
-          <li><strong>Temperatura:</strong> [para qué sirve medirla]</li>
-          <li><strong>pH:</strong> [para qué sirve medirlo]</li>
-          <li><strong>Turbidez:</strong> [para qué sirve medirla]</li>
-          <li><strong>Fotos de los corales:</strong> [para qué sirven]</li>
-        </ul>
-      </article>
+        <!-- El proyecto -->
+        <article class="tarjeta bloque">
+          <h3>El proyecto</h3>
+          <p>
+            Coralis vigila el agua que rodea a los corales. Mide temperatura, pH y turbidez, compara cada
+            lectura con rangos sanos y avisa cuando las condiciones pueden blanquear el coral.
+          </p>
+          <p>
+            Los arrecifes albergan buena parte de la vida marina y protegen las costas del oleaje. Cuando
+            el coral se blanquea, todo ese ecosistema se debilita; detectarlo a tiempo da margen para actuar.
+          </p>
+        </article>
 
-      <!-- Cómo funciona -->
-      <article class="tarjeta bloque">
-        <h3>⚙️ Cómo funciona</h3>
-        <p class="flujo">Sensores → Raspberry Pi → Heltec LoRa32 → LoRaWAN → TTN → Firebase → Página web</p>
-        <p>[Explicación corta de cada paso, si quieres.]</p>
-      </article>
+        <!-- El producto -->
+        <article class="tarjeta bloque">
+          <h3>El producto</h3>
+          <p>Un dispositivo con sensores conectados a una Raspberry Pi que toma lecturas del agua y las envía por LoRaWAN.</p>
+          <ul>
+            <li><strong>Temperatura:</strong> el calor es la causa principal del blanqueamiento.</li>
+            <li><strong>pH:</strong> un agua más ácida le impide al coral formar bien su esqueleto.</li>
+            <li><strong>Turbidez:</strong> el agua turbia tapa la luz que necesitan las algas del coral.</li>
+            <li><strong>Fotos de los corales:</strong> [para qué sirven]</li>
+          </ul>
+        </article>
 
-      <!-- Objetivos -->
-      <article class="tarjeta bloque">
-        <h3>🎯 Objetivos</h3>
-        <ul>
-          <li>[Objetivo 1]</li>
-          <li>[Objetivo 2]</li>
-          <li>[Objetivo 3]</li>
-        </ul>
-      </article>
+        <!-- Cómo funciona -->
+        <article class="tarjeta bloque">
+          <h3>Cómo funciona</h3>
+          <p class="flujo">Sensores → Raspberry Pi → Heltec LoRa32 → LoRaWAN → TTN → Firebase → Página web</p>
+          <p>
+            La Raspberry arma cada lectura con su hora y el ID del dispositivo, la Heltec la envía por radio,
+            The Things Network la recibe y Firebase guarda el historial que ves en esta página.
+          </p>
+        </article>
+
+        <!-- Objetivos -->
+        <article class="tarjeta bloque">
+          <h3>Objetivos</h3>
+          <ul>
+            <li>Medir en tiempo real la temperatura, el pH y la turbidez del agua.</li>
+            <li>Mostrar el estado del coral de forma clara, con un dibujo que pierde color cuando hay riesgo.</li>
+            <li>Avisar por correo cuando las condiciones cambian de nivel.</li>
+          </ul>
+        </article>
+      </div>
 
       <!-- Autores: copia un <div class="autor"> por cada integrante -->
-      <h2 class="subtitulo-seccion">👥 Autores</h2>
+      <h2 class="subtitulo-seccion">Autores</h2>
       <div class="autores">
         <div class="autor">
           <div class="avatar">[I]</div>
           <h3>[Nombre completo]</h3>
-          <p>[Rol en el proyecto. Ej: Página web y base de datos]</p>
+          <p>Página web y base de datos</p>
           <p class="pequeno">[Carrera / semestre]</p>
         </div>
 
         <div class="autor">
           <div class="avatar">[I]</div>
           <h3>[Nombre completo]</h3>
-          <p>[Rol en el proyecto. Ej: Sensores y Raspberry Pi]</p>
+          <p>Sensores y Raspberry Pi</p>
           <p class="pequeno">[Carrera / semestre]</p>
         </div>
 
         <div class="autor">
           <div class="avatar">[I]</div>
           <h3>[Nombre completo]</h3>
-          <p>[Rol en el proyecto. Ej: Comunicación LoRaWAN y TTN]</p>
+          <p>Comunicación LoRaWAN y TTN</p>
           <p class="pequeno">[Carrera / semestre]</p>
         </div>
       </div>
 
-      <!-- Datos académicos -->
-      <article class="tarjeta bloque">
-        <h3>🎓 Información académica</h3>
-        <p><strong>Universidad:</strong> [Nombre de la universidad]</p>
-        <p><strong>Materia:</strong> [Nombre de la materia]</p>
-        <p><strong>Profesor:</strong> [Nombre del profesor]</p>
-        <p><strong>Año:</strong> 2026</p>
-      </article>
+      <div class="nosotros-panel">
+        <!-- Datos académicos -->
+        <article class="tarjeta bloque">
+          <h3>Información académica</h3>
+          <p><strong>Universidad:</strong> Pontificia Universidad Javeriana</p>
+          <p><strong>Materia:</strong> [Nombre de la materia]</p>
+          <p><strong>Profesor:</strong> [Nombre del profesor]</p>
+          <p><strong>Año:</strong> 2026</p>
+        </article>
 
-      <!-- Contacto (opcional, si no lo quieres borra este bloque) -->
-      <article class="tarjeta bloque">
-        <h3>✉️ Contacto</h3>
-        <p>[Correo del grupo o enlace al repositorio]</p>
-      </article>
+        <!-- Contacto (opcional, si no lo quieres borra este bloque) -->
+        <article class="tarjeta bloque">
+          <h3>Contacto</h3>
+          <p>[Correo del grupo o enlace al repositorio]</p>
+        </article>
+      </div>
     </section>
 
   </main>
