@@ -13,10 +13,6 @@
 //   5) Gráfica y franja del blanqueo, días más blancos y más sanos
 //   6) Tiempo en cada nivel (ideal / medio / crítico)
 //   7) Umbrales superados: veces que salió del ideal y rachas
-//   8) Tendencia (regresión lineal) y pronóstico de cruce al nivel crítico
-//   9) Correlación de Pearson entre variables
-//  10) Estadística de la ventana (promedio, desviación, CV, extremos)
-//  11) Calidad de los datos (completitud, huecos, lecturas sospechosas)
 // ============================================================
 
 const MINUTO = 60 * 1000;
@@ -29,15 +25,7 @@ const MINUTO = 60 * 1000;
 // y se recupera por completo en ~25 días de agua ideal.
 // (Son supuestos del modelo; se pueden ajustar.)
 const SUBE_POR_DIA = 0.12;
-const DIAS_TENDENCIA = 30;   // la tendencia se mide con los últimos 30 días
 const BAJA_POR_DIA = 0.04;
-
-// Rangos físicos posibles: lo que se salga de aquí es un error de sensor
-const RANGO_FISICO = {
-  temp: [0, 40],
-  ph: [0, 14],
-  turb: [0, 1000],
-};
 
 const NOMBRE_NIVEL = { ideal: "Ideal", medio: "Medio", critico: "Crítico" };
 
@@ -52,13 +40,6 @@ export function crearAnalitica({ Chart, RANGOS, VARIABLES, nivelDe, horaCompleta
   function promedio(lista) {
     const v = lista.filter((n) => !isNaN(n));
     return v.length ? v.reduce((s, n) => s + n, 0) / v.length : NaN;
-  }
-
-  function desviacion(lista) {
-    const v = lista.filter((n) => !isNaN(n));
-    if (v.length < 2) return NaN;
-    const m = promedio(v);
-    return Math.sqrt(v.reduce((s, n) => s + (n - m) ** 2, 0) / (v.length - 1));
   }
 
   // Color del coral según el blanqueo (de coral vivo a blanco hueso)
@@ -104,13 +85,10 @@ export function crearAnalitica({ Chart, RANGOS, VARIABLES, nivelDe, horaCompleta
     const dias = [];
     let blanqueo = 0;
     for (const [dia, grupo] of [...grupos.entries()].sort((a, b) => a[0] - b[0])) {
-      const d = { dia, n: grupo.length, hora: grupo[0].hora, niveles: {}, sospechosas: 0 };
+      const d = { dia, n: grupo.length, hora: grupo[0].hora, niveles: {} };
       for (const nombre of nombres) {
         d[nombre] = promedio(grupo.map((l) => l[nombre]));
         d.niveles[nombre] = nivelDe(nombre, d[nombre]);
-      }
-      for (const l of grupo) {
-        if (nombres.some((nombre) => !isNaN(l[nombre]) && (l[nombre] < RANGO_FISICO[nombre][0] || l[nombre] > RANGO_FISICO[nombre][1]))) d.sospechosas++;
       }
       // Estrés del día = el de la PEOR variable (igual que la salud del coral)
       const estreses = nombres.map((nombre) => estres(nombre, d[nombre])).filter((e) => e !== null);
@@ -437,208 +415,6 @@ export function crearAnalitica({ Chart, RANGOS, VARIABLES, nivelDe, horaCompleta
     caja.replaceChildren(...bloques);
   }
 
-  // ---------- 8) TENDENCIA Y PRONÓSTICO ----------
-  // Regresión lineal por mínimos cuadrados: valor = a + b·día
-  function regresion(puntos) {
-    const n = puntos.length;
-    if (n < 3) return null;
-    const mx = promedio(puntos.map((p) => p.x));
-    const my = promedio(puntos.map((p) => p.y));
-    let sxy = 0, sxx = 0, syy = 0;
-    for (const p of puntos) {
-      sxy += (p.x - mx) * (p.y - my);
-      sxx += (p.x - mx) ** 2;
-      syy += (p.y - my) ** 2;
-    }
-    if (sxx === 0) return null;
-    const b = sxy / sxx;
-    const r2 = syy === 0 ? 1 : (sxy * sxy) / (sxx * syy);
-    return { b, a: my - b * mx, r2 };
-  }
-
-  function pintarTendencias(v) {
-    const caja = document.getElementById("tendencias");
-    const bloques = [];
-    for (const nombre of nombres) {
-      const vv = VARIABLES[nombre];
-      const r = RANGOS[nombre];
-      // Tendencia reciente: los últimos 30 días de la ventana (o menos si la ventana es corta)
-      const recientes = v.dias.filter((d) => d.dia > v.hasta - DIAS_TENDENCIA);
-      const puntos = recientes.filter((d) => !isNaN(d[nombre])).map((d) => ({ x: d.dia, y: d[nombre] }));
-      const reg = regresion(puntos);
-      const el = document.createElement("div");
-      el.className = "evento";
-      const h = document.createElement("h3");
-      h.textContent = vv.nombre;
-      const p1 = document.createElement("p");
-      const p2 = document.createElement("p");
-      p2.className = "secundario-texto";
-      el.append(h, p1, p2);
-      bloques.push(el);
-      if (!reg) {
-        p1.textContent = "Faltan datos para calcular la tendencia.";
-        continue;
-      }
-      const ultimo = puntos[puntos.length - 1];
-      const signo = reg.b > 0 ? "+" : "";
-      const pendiente = Math.abs(reg.b) < 1e-6 ? "0" : String(Number(reg.b.toPrecision(2)));
-      p1.textContent = `${signo}${pendiente}${vv.unidad} por día en los últimos ${Math.min(DIAS_TENDENCIA, v.cantidadDias)} días.`;
-
-      // ¿Cuándo llegaría al nivel crítico si sigue igual?
-      const nivelHoy = nivelDe(nombre, ultimo.y);
-      let pronostico;
-      if (nivelHoy === "critico") {
-        pronostico = "Ya está en nivel crítico.";
-        el.dataset.riesgo = "alto";
-      } else {
-        const limite = reg.b > 0 ? r.criticoAlto : r.criticoBajo;
-        const dias = Math.abs(reg.b) > 1e-9 ? (limite - ultimo.y) / reg.b : Infinity;
-        if (dias > 0 && dias <= 365 && limite > -1) {
-          pronostico = `Si sigue así, llegaría a ${limite}${vv.unidad} (crítico) en unos ${Math.ceil(dias)} días, hacia el día ${formatoEntero(ultimo.x + Math.ceil(dias))}.`;
-          // La etiqueta solo sale si la tendencia es confiable (R² ≥ 0.3)
-          if (reg.r2 >= 0.3) el.dataset.riesgo = dias <= 30 ? "alto" : "medio";
-        } else {
-          pronostico = "Con esta tendencia no llega al nivel crítico pronto.";
-        }
-      }
-      const confianza = reg.r2 < 0.3 ? " La tendencia es débil (R² " + reg.r2.toFixed(2) + "), tómala con cuidado." : " R² = " + reg.r2.toFixed(2) + ".";
-      p2.textContent = pronostico + confianza;
-    }
-    caja.replaceChildren(...bloques);
-  }
-
-  // ---------- 9) CORRELACIONES ----------
-  function pearson(xs, ys) {
-    const pares = xs.map((x, i) => [x, ys[i]]).filter(([x, y]) => !isNaN(x) && !isNaN(y));
-    if (pares.length < 3) return NaN;
-    const mx = promedio(pares.map((p) => p[0]));
-    const my = promedio(pares.map((p) => p[1]));
-    let sxy = 0, sxx = 0, syy = 0;
-    for (const [x, y] of pares) {
-      sxy += (x - mx) * (y - my);
-      sxx += (x - mx) ** 2;
-      syy += (y - my) ** 2;
-    }
-    return sxx && syy ? sxy / Math.sqrt(sxx * syy) : NaN;
-  }
-
-  function pintarCorrelaciones(v) {
-    const caja = document.getElementById("correlaciones");
-    const pares = [["temp", "ph"], ["temp", "turb"], ["ph", "turb"]];
-    const filas = pares.map(([a, b]) => {
-      const r = pearson(v.dias.map((d) => d[a]), v.dias.map((d) => d[b]));
-      const fila = document.createElement("div");
-      fila.className = "correlacion";
-      const nombre = document.createElement("span");
-      nombre.className = "nombre-fila";
-      nombre.textContent = `${VARIABLES[a].nombre} y ${VARIABLES[b].nombre}`;
-      const escala = document.createElement("div");
-      escala.className = "escala-r";
-      const punto = document.createElement("span");
-      punto.className = "punto-r";
-      escala.append(punto);
-      const texto = document.createElement("p");
-      texto.className = "secundario-texto";
-      if (isNaN(r)) {
-        punto.hidden = true;
-        texto.textContent = "Sin datos suficientes.";
-      } else {
-        punto.style.left = ((r + 1) / 2) * 100 + "%";
-        const fuerza = Math.abs(r) >= 0.7 ? "fuerte" : Math.abs(r) >= 0.4 ? "moderada" : Math.abs(r) >= 0.2 ? "débil" : null;
-        texto.textContent = fuerza
-          ? `r = ${r.toFixed(2)}: relación ${fuerza}; ${r > 0 ? "suben y bajan juntas" : "cuando una sube, la otra baja"}.`
-          : `r = ${r.toFixed(2)}: prácticamente no tienen relación.`;
-      }
-      fila.append(nombre, escala, texto);
-      return fila;
-    });
-    caja.replaceChildren(...filas);
-  }
-
-  // ---------- 10) ESTADÍSTICA ----------
-  function pintarEstadistica(v) {
-    const tabla = document.getElementById("tablaEstadistica");
-    const cabeza = ["Variable", "Promedio", "Desv. estándar", "CV", "Mínimo", "Máximo"];
-    const thead = document.createElement("thead");
-    const trh = document.createElement("tr");
-    for (const t of cabeza) {
-      const th = document.createElement("th");
-      th.textContent = t;
-      trh.append(th);
-    }
-    thead.append(trh);
-    const tbody = document.createElement("tbody");
-    for (const nombre of nombres) {
-      const vv = VARIABLES[nombre];
-      const validos = v.dias.filter((d) => !isNaN(d[nombre]));
-      const valores = validos.map((d) => d[nombre]);
-      const m = promedio(valores);
-      const s = desviacion(valores);
-      const min = validos.reduce((a, d) => (!a || d[nombre] < a[nombre] ? d : a), null);
-      const max = validos.reduce((a, d) => (!a || d[nombre] > a[nombre] ? d : a), null);
-      const celdas = [
-        vv.nombre,
-        fmt(m, vv.decimales) + vv.unidad,
-        "± " + fmt(s, vv.decimales + 1),
-        isNaN(s) || !m ? "--" : ((s / Math.abs(m)) * 100).toFixed(1) + " %",
-        min ? `${fmt(min[nombre], vv.decimales)} (día ${formatoEntero(min.dia)})` : "--",
-        max ? `${fmt(max[nombre], vv.decimales)} (día ${formatoEntero(max.dia)})` : "--",
-      ];
-      const tr = document.createElement("tr");
-      celdas.forEach((t, i) => {
-        const td = document.createElement(i === 0 ? "th" : "td");
-        td.textContent = t;
-        if (i === 0) td.scope = "row";
-        tr.append(td);
-      });
-      tbody.append(tr);
-    }
-    tabla.replaceChildren(thead, tbody);
-  }
-
-  // ---------- 11) CALIDAD DE LOS DATOS ----------
-  function dato(etiqueta, valor, nota, clase = "") {
-    const div = document.createElement("div");
-    div.className = "dato-calidad " + clase;
-    const s = document.createElement("span");
-    s.textContent = etiqueta;
-    const f = document.createElement("strong");
-    f.textContent = valor;
-    div.append(s, f);
-    if (nota) {
-      const sm = document.createElement("small");
-      sm.textContent = nota;
-      div.append(sm);
-    }
-    return div;
-  }
-
-  function pintarCalidad(v) {
-    const caja = document.getElementById("calidadDatos");
-    const conDato = v.casillas.filter((c) => c.dato).length;
-    const primero = v.casillas.findIndex((c) => c.dato);
-    const esperados = primero === -1 ? 0 : v.casillas.length - primero;   // desde el primer día con dato
-    const completitud = esperados ? (conDato / esperados) * 100 : 0;
-
-    // Hueco más largo (días seguidos sin lectura)
-    let hueco = 0, actual = 0, finHueco = null;
-    for (const c of v.casillas.slice(Math.max(primero, 0))) {
-      if (c.dato) { actual = 0; continue; }
-      actual++;
-      if (actual > hueco) { hueco = actual; finHueco = c.dia; }
-    }
-    const sospechosas = v.dias.reduce((s, d) => s + d.sospechosas, 0);
-    const ultimo = v.dias[v.dias.length - 1];
-    const minutos = ultimo ? Math.round((Date.now() - ultimo.hora.getTime()) / MINUTO) : NaN;
-
-    caja.replaceChildren(
-      dato("Días con lectura", `${formatoEntero(conDato)} de ${formatoEntero(esperados)}`, `${completitud.toFixed(1)} % completo`, completitud < 90 ? "aviso" : ""),
-      dato("Hueco más largo", hueco ? `${hueco} ${hueco === 1 ? "día" : "días"}` : "Ninguno", hueco ? `Terminó en el día ${formatoEntero(finHueco)}` : "No faltó ningún día", hueco > 5 ? "aviso" : ""),
-      dato("Lecturas sospechosas", String(sospechosas), "Fuera de lo físicamente posible", sospechosas ? "aviso" : ""),
-      dato("Última señal", isNaN(minutos) ? "--" : minutos <= 1 ? "Hace menos de 1 min" : `Hace ${formatoEntero(minutos)} min`, minutos > 5 ? "El dispositivo no está enviando" : "El dispositivo está enviando", minutos > 5 ? "aviso" : ""),
-    );
-  }
-
   // ---------- ACUARIO: EL CORAL SIGUE EL BLANQUEO ACUMULADO ----------
   function pintarAcuario(serie) {
     const ultimo = serie.dias[serie.dias.length - 1];
@@ -658,10 +434,6 @@ export function crearAnalitica({ Chart, RANGOS, VARIABLES, nivelDe, horaCompleta
     pintarBlanqueo(v);
     pintarNiveles(v);
     pintarEventos(v);
-    pintarTendencias(v);
-    pintarCorrelaciones(v);
-    pintarEstadistica(v);
-    pintarCalidad(v);
   }
 
   return { serieDiaria, ventana, pintar };

@@ -2298,15 +2298,6 @@ button.enlace:hover {
   margin: 0;
 }
 
-/* Estadística y calidad ocupan todo el ancho */
-.rejilla-analitica .ancho-completo {
-  grid-column: 1 / -1;
-}
-
-.ancho-completo #calidadDatos {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
 .leyenda-franja {
   display: flex;
   flex-wrap: wrap;
@@ -2412,118 +2403,6 @@ button.enlace:hover {
   color: var(--coral-texto);
 }
 
-.evento[data-riesgo="alto"] h3::after,
-.evento[data-riesgo="medio"] h3::after {
-  content: "Atención";
-  margin-left: 8px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
-  vertical-align: 2px;
-  color: var(--medio-texto);
-  background: rgba(242, 193, 78, 0.28);
-}
-
-.evento[data-riesgo="alto"] h3::after {
-  content: "Riesgo";
-  color: var(--coral-texto);
-  background: rgba(229, 72, 77, 0.12);
-}
-
-/* Correlaciones: una regla de −1 a 1 con un punto */
-.correlacion {
-  padding: 10px 0;
-  border-top: 1px solid var(--borde);
-}
-
-.correlacion:first-child {
-  border-top: none;
-  padding-top: 0;
-}
-
-.escala-r {
-  position: relative;
-  height: 8px;
-  margin: 10px 0 8px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--coral) 0%, #e2eff1 40%, #e2eff1 60%, var(--turquesa) 100%);
-}
-
-.escala-r::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: -3px;
-  width: 1px;
-  height: 14px;
-  background: var(--texto-suave);
-}
-
-.punto-r {
-  position: absolute;
-  top: 50%;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--abismo);
-  border: 3px solid var(--blanco);
-  box-shadow: 0 1px 4px rgba(6, 42, 58, 0.4);
-  transform: translate(-50%, -50%);
-}
-
-.correlacion p {
-  margin: 0;
-  font-size: 14px;
-}
-
-/* Tabla compacta de estadística */
-.tabla.compacta th,
-.tabla.compacta td {
-  padding: 10px 12px;
-}
-
-.tabla.compacta tbody th {
-  text-align: left;
-  font-size: 14px;
-  color: var(--texto);
-  background: none;
-}
-
-/* Calidad de los datos */
-#calidadDatos {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.dato-calidad {
-  display: flex;
-  flex-direction: column;
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: var(--espuma);
-}
-
-.dato-calidad span {
-  font-size: 13px;
-  color: var(--texto-suave);
-}
-
-.dato-calidad strong {
-  font-size: 18px;
-  font-variant-numeric: tabular-nums;
-}
-
-.dato-calidad small {
-  font-size: 12px;
-  color: var(--texto-suave);
-}
-
-.dato-calidad.aviso {
-  background: rgba(242, 193, 78, 0.2);
-}
-
 /* Fotos del equipo */
 img.avatar {
   object-fit: cover;
@@ -2592,9 +2471,7 @@ img.avatar {
 
 @media (max-width: 760px) {
   .variaciones,
-  .extremos,
-  #calidadDatos,
-  .ancho-completo #calidadDatos {
+  .extremos {
     grid-template-columns: 1fr;
   }
 
