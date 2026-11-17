@@ -8,7 +8,7 @@
 //   4) Mi cuenta: cambiar la contraseña
 //   5) Escoger el dispositivo por su ID (ej: CORAL_1)
 //   6) Leer los datos de Firebase en tiempo real
-//   7) Inicio: coral de salud, gráficas por semana o por mes, resumen y estado
+//   7) Inicio: coral de salud, gráficas y analítica (ver analitica.js; 1 minuto = 1 día)
 //   8) Consultas: resumen de un día, gráfica por horas, tabla y descarga
 //   10) Suscribirse a una Raspberry para recibir alertas por correo
 //   9) Extra: el ojito de la contraseña
@@ -32,6 +32,7 @@ import {
 // set = escribir un dato, remove = borrarlo (para las suscripciones)
 import { getDatabase, ref, get, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import Chart from "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/auto/+esm";   // librería para las gráficas
+import { crearAnalitica } from "./analitica.js";   // analítica del Inicio (1 minuto = 1 día)
 
 
 // ---------- DATOS DEL PROYECTO DE FIREBASE ----------
@@ -366,7 +367,8 @@ function escribirNumero(id, numero, decimales) {
 // 7) INICIO: CORAL DE SALUD Y GRÁFICAS POR SEMANA O POR MES
 // ============================================================
 
-let diasPeriodo = 7;   // 7 = semana, 30 = mes
+// En Coralis 1 minuto de medición = 1 día, así que la ventana se cuenta en minutos-días
+let diasPeriodo = 7;   // 7, 30, 90 o 365 días
 
 // Cada variable con sus ids en el HTML, su nombre y cuántos decimales mostrar
 const VARIABLES = {
@@ -626,7 +628,7 @@ function crearGrafica(idCanvas, nombre, color, rango, proporcion = 2) {
       },
       scales: {
         x: {
-          ticks: { color: COLOR_LETRAS, maxTicksLimit: 8 },
+          ticks: { color: COLOR_LETRAS, maxTicksLimit: 6, maxRotation: 0 },
           grid: { display: false },
           border: { color: COLOR_RAYAS },
         },
@@ -647,46 +649,38 @@ const graficas = {
   turb: crearGrafica("graficaTurb", "Turbidez (NTU)", COLORES.turb, RANGOS.turb),
 };
 
-// actualizarInicio: arma los días del periodo, saca el promedio de cada día
-// y actualiza gráficas, tarjetas, mínimo/máximo, estado y el coral
+// La analítica (analitica.js) recibe lo que necesita de este archivo
+const analitica = crearAnalitica({ Chart, RANGOS, VARIABLES, nivelDe, horaCompleta });
+
+// actualizarInicio: arma la serie de días (1 minuto = 1 día), toma la ventana
+// escogida y actualiza gráficas, tarjetas, mínimo/máximo, estado, el coral y la analítica
 function actualizarInicio() {
   if (todosLosDatos.length === 0) return;
 
-  // El periodo termina en el día de la última lectura y va hacia atrás
   const ultimo = todosLosDatos[todosLosDatos.length - 1];
-  const dias = [];
-  for (let i = diasPeriodo - 1; i >= 0; i--) {
-    const dia = new Date(ultimo.hora.getTime() - i * 24 * 60 * 60 * 1000);
-    dias.push(claveDia(dia));
-  }
+  const anterior = todosLosDatos[todosLosDatos.length - 2];
+  const serie = analitica.serieDiaria(todosLosDatos);       // un punto por minuto = por día
+  const ventana = analitica.ventana(serie, diasPeriodo);     // los últimos N días
+  document.getElementById("resCantidad").textContent = ventana.lecturas;
 
-  // Solo las lecturas que caen dentro de esos días
-  const delPeriodo = todosLosDatos.filter((d) => dias.includes(claveDia(d.hora)));
-  document.getElementById("resCantidad").textContent = delPeriodo.length;
-
-  // Eje X: el día en formato corto, ej: 12/11
-  const etiquetas = dias.map(diaCorto);
+  // Eje X: el número de día
+  const etiquetas = ventana.casillas.map((c) => "Día " + c.dia.toLocaleString("es-CO"));
 
   for (const nombre in VARIABLES) {
     const v = VARIABLES[nombre];
 
-    // Promedio de cada día (null si ese día no hubo lecturas)
-    const porDia = dias.map((clave) => {
-      const delDia = delPeriodo.filter((d) => claveDia(d.hora) === clave).map((d) => d[nombre]);
-      const p = promedio(delDia);
-      return isNaN(p) ? null : Number(p.toFixed(v.decimales));
-    });
-
+    // Valor de cada día (null si ese día no llegó lectura)
     graficas[nombre].data.labels = etiquetas;
-    graficas[nombre].data.datasets[0].data = porDia;
+    graficas[nombre].data.datasets[0].data = ventana.casillas.map((c) =>
+      c.dato && !isNaN(c.dato[nombre]) ? Number(c.dato[nombre].toFixed(v.decimales)) : null);
+    graficas[nombre].data.datasets[0].pointRadius = ventana.casillas.length > 40 ? 0 : 3;
     graficas[nombre].update();
 
-    // Valor más nuevo y cuánto cambió respecto a la lectura anterior
-    const anterior = todosLosDatos[todosLosDatos.length - 2];
+    // Valor más nuevo y cuánto cambió respecto al día anterior
     ponerValor(v, ultimo[nombre], anterior ? anterior[nombre] : NaN);
 
-    // Promedio, mínimo y máximo de todo el periodo
-    const valores = delPeriodo.map((d) => d[nombre]).filter((n) => !isNaN(n));
+    // Promedio, mínimo y máximo de la ventana
+    const valores = ventana.dias.map((d) => d[nombre]).filter((n) => !isNaN(n));
     escribirNumero(v.prom, promedio(valores), v.decimales);
     escribirNumero(v.min, valores.length ? Math.min(...valores) : NaN, v.decimales);
     escribirNumero(v.max, valores.length ? Math.max(...valores) : NaN, v.decimales);
@@ -695,6 +689,7 @@ function actualizarInicio() {
   }
 
   pintarSaludInicio(ultimo);
+  analitica.pintar(serie, ventana);
 }
 
 // diaCorto: de "2026-11-12" a "12/11"
@@ -713,7 +708,7 @@ function ponerValor(v, actual, anterior) {
   }
   const diferencia = actual - anterior;
   const flecha = diferencia > 0 ? "▲" : diferencia < 0 ? "▼" : "●";
-  cambio.textContent = flecha + " " + Math.abs(diferencia).toFixed(v.decimales) + " desde la lectura anterior";
+  cambio.textContent = flecha + " " + Math.abs(diferencia).toFixed(v.decimales) + " desde el día anterior";
 }
 
 // ponerEstado: la etiqueta de color arriba a la derecha de cada tarjeta
@@ -734,15 +729,18 @@ function marcarBoton(ids, elegido) {
   ids.forEach((id) => document.getElementById(id).classList.toggle("activa", id === elegido));
 }
 
-// cambiarPeriodo: los botones Semana / Mes
+// cambiarPeriodo: los botones de la ventana (7, 30, 90 días y 1 año)
+const BOTONES_PERIODO = { 7: "btnSemana", 30: "btnMes", 90: "btnTrimestre", 365: "btnAnio" };
 function cambiarPeriodo(dias) {
   diasPeriodo = dias;
-  marcarBoton(["btnSemana", "btnMes"], dias === 7 ? "btnSemana" : "btnMes");
+  marcarBoton(Object.values(BOTONES_PERIODO), BOTONES_PERIODO[dias]);
   actualizarInicio();
 }
 
 document.getElementById("btnSemana").addEventListener("click", () => cambiarPeriodo(7));
 document.getElementById("btnMes").addEventListener("click", () => cambiarPeriodo(30));
+document.getElementById("btnTrimestre").addEventListener("click", () => cambiarPeriodo(90));
+document.getElementById("btnAnio").addEventListener("click", () => cambiarPeriodo(365));
 
 
 // ============================================================
@@ -776,7 +774,7 @@ function mostrarDia(dia) {
   const dias = diasConDatos();
   if (dias.length > 0) {
     document.getElementById("estadoConsulta").textContent =
-      idActual + " tiene datos de " + dias.length + " días, del " + diaCorto(dias[0]) + " al " + diaCorto(dias[dias.length - 1]) + ".";
+      idActual + " tiene mediciones en " + dias.length + " fechas del calendario, del " + diaCorto(dias[0]) + " al " + diaCorto(dias[dias.length - 1]) + ".";
   }
 
   lecturasDelDia = todosLosDatos.filter((d) => claveDia(d.hora) === dia);

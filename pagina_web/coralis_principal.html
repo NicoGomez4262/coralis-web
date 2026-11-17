@@ -59,7 +59,7 @@
 
     <!-- ========== SECCIÓN 1: INICIO (LAS GRÁFICAS) ========== -->
     <section id="inicio">
-      <h1>Calidad del agua</h1>
+      <h1>Analítica del agua</h1>
       <p class="estado" id="estadoDatos">Escribe el ID del dispositivo para ver sus datos.</p>
 
       <!-- Paso 1: escribir el ID del dispositivo (Raspberry) -->
@@ -91,7 +91,7 @@
             <strong id="resUltima">--</strong>
           </div>
           <div class="dato-resumen">
-            <span class="etiqueta">Lecturas en el periodo</span>
+            <span class="etiqueta">Lecturas en la ventana</span>
             <strong id="resCantidad">--</strong>
           </div>
           <button type="button" class="secundario suscribir" id="btnSuscribir">🔔 Recibir alertas por correo</button>
@@ -107,6 +107,7 @@
             <span class="etiqueta">Salud del coral</span>
             <h2 id="saludTitulo">--</h2>
             <p id="saludDetalle"></p>
+            <p class="indice-blanqueo" id="indiceBlanqueo"></p>
             <ul class="indicadores">
               <li id="indTemp">Temperatura</li>
               <li id="indPh">pH</li>
@@ -120,12 +121,49 @@
           </div>
         </div>
 
-        <!-- Botones para escoger el periodo de las gráficas -->
-        <div class="periodo">
-          <span>Ver cambio por:</span>
-          <button type="button" class="opcion activa" id="btnSemana">Semana</button>
-          <button type="button" class="opcion" id="btnMes">Mes</button>
+        <!-- Ventana de análisis. En Coralis 1 minuto de medición = 1 día -->
+        <div class="periodo ventana">
+          <span>Ventana de análisis:</span>
+          <button type="button" class="opcion activa" id="btnSemana">7 días</button>
+          <button type="button" class="opcion" id="btnMes">30 días</button>
+          <button type="button" class="opcion" id="btnTrimestre">90 días</button>
+          <button type="button" class="opcion" id="btnAnio">1 año</button>
+          <small class="escala-tiempo">1 minuto de medición = 1 día</small>
         </div>
+
+        <!-- Variación % en la ventana: |inicio − final| / inicio × 100 -->
+        <section class="bloque-analitica" aria-labelledby="tituloVariacion">
+          <div class="cabeza-analitica">
+            <h2 id="tituloVariacion">Variación en la ventana</h2>
+            <p class="formula">Variación % = |dato inicial − dato final| / dato inicial × 100</p>
+          </div>
+          <div class="variaciones">
+            <article class="variacion temp" id="varTemp"></article>
+            <article class="variacion ph" id="varPh"></article>
+            <article class="variacion turb" id="varTurb"></article>
+          </div>
+        </section>
+
+        <!-- Blanqueo acumulado día a día -->
+        <section class="tarjeta bloque-analitica blanqueo" aria-labelledby="tituloBlanqueo">
+          <div class="cabeza-analitica">
+            <h2 id="tituloBlanqueo">¿Cuándo estuvo más blanco el coral?</h2>
+            <p>Índice de blanqueo acumulado por día. Sube mientras el agua lo estresa y baja despacio cuando vuelve al rango ideal.</p>
+          </div>
+          <canvas id="graficaBlanqueo"></canvas>
+          <div class="franja-dias" id="franjaDias" aria-hidden="true"></div>
+          <p class="leyenda-franja">Color del coral cada día: vivo <span class="degradado"></span> blanco <span class="clave sin-dato"></span> sin lectura</p>
+          <div class="extremos">
+            <div>
+              <h3>Días más blancos</h3>
+              <ol class="lista-dias" id="diasBlancos"></ol>
+            </div>
+            <div>
+              <h3>Días más sanos</h3>
+              <ol class="lista-dias" id="diasSanos"></ol>
+            </div>
+          </div>
+        </section>
 
         <div class="tarjetas">
 
@@ -190,15 +228,30 @@
           </article>
 
         </div>
-        <p class="nota">Cada punto de la gráfica es el promedio de ese día. La franja verde es el rango ideal: pH 7.89–8.08, temperatura 25–27 °C, turbidez 0–3 NTU.</p>
+        <p class="nota">Cada punto es un día (1 minuto de medición). La franja verde es el rango ideal: pH 7.89–8.08, temperatura 25–27 °C, turbidez 0–3 NTU.</p>
+
+        <div class="rejilla-analitica">
+          <section class="tarjeta bloque-analitica" aria-labelledby="tituloNiveles">
+            <h2 id="tituloNiveles">Tiempo en cada nivel</h2>
+            <p class="explica">Qué parte de los días de la ventana pasó cada variable en ideal, medio o crítico.</p>
+            <div id="nivelesTiempo"></div>
+          </section>
+
+          <section class="tarjeta bloque-analitica" aria-labelledby="tituloEventos">
+            <h2 id="tituloEventos">Umbrales superados</h2>
+            <p class="explica">Cuántas veces el agua salió del rango ideal y cuánto duró lo peor.</p>
+            <div id="eventosUmbral"></div>
+          </section>
+
+        </div>
       </div>
     </section>
 
 
     <!-- ========== SECCIÓN 2: CONSULTAS (TODO SOBRE UN DÍA) ========== -->
     <section id="consultas" hidden>
-      <h1>Consultas por día</h1>
-      <p class="estado" id="estadoConsulta">Elige un día para ver todas las lecturas que mandó la Raspberry.</p>
+      <h1>Consultas por fecha</h1>
+      <p class="estado" id="estadoConsulta">Elige una fecha del calendario para ver cada lectura (cada minuto) que mandó la Raspberry.</p>
 
       <!-- Escoger el día: flechas para moverse entre días con datos -->
       <form class="filtro" id="formConsulta">
@@ -375,28 +428,28 @@
         </article>
       </div>
 
-      <!-- Autores: copia un <div class="autor"> por cada integrante -->
+      <!-- Autores: copia un <div class="autor"> por cada integrante (foto en la carpeta fotos/) -->
       <h2 class="subtitulo-seccion">Autores</h2>
       <div class="autores">
         <div class="autor">
-          <div class="avatar">[I]</div>
-          <h3>[Nombre completo]</h3>
+          <img class="avatar" src="fotos/cesar-diaz.jpg" alt="Foto de Cesar Esteban Diaz" width="72" height="72">
+          <h3>Cesar Esteban Diaz</h3>
           <p>Página web y base de datos</p>
-          <p class="pequeno">[Carrera / semestre]</p>
+          <p class="pequeno">Ingeniería Mecatrónica</p>
         </div>
 
         <div class="autor">
-          <div class="avatar">[I]</div>
-          <h3>[Nombre completo]</h3>
+          <img class="avatar" src="fotos/laura-gabriela-hernandez.jpg" alt="Foto de Laura Gabriela Hernandez" width="72" height="72">
+          <h3>Laura Gabriela Hernandez</h3>
           <p>Sensores y Raspberry Pi</p>
-          <p class="pequeno">[Carrera / semestre]</p>
+          <p class="pequeno">Bioingeniería</p>
         </div>
 
         <div class="autor">
-          <div class="avatar">[I]</div>
-          <h3>[Nombre completo]</h3>
+          <img class="avatar" src="fotos/katheryn-camacho.jpg" alt="Foto de Katheryn Camacho Gonzalez" width="72" height="72">
+          <h3>Katheryn Camacho Gonzalez</h3>
           <p>Comunicación LoRaWAN y TTN</p>
-          <p class="pequeno">[Carrera / semestre]</p>
+          <p class="pequeno">[Carrera]</p>
         </div>
       </div>
 
@@ -404,9 +457,15 @@
         <!-- Datos académicos -->
         <article class="tarjeta bloque">
           <h3>Información académica</h3>
+          <div class="profe">
+            <img src="fotos/wilder-castellanos.jpg" alt="Foto del profesor Wilder Castellanos" width="56" height="56">
+            <div>
+              <strong>Wilder Castellanos</strong>
+              <span>Profesor</span>
+            </div>
+          </div>
           <p><strong>Universidad:</strong> Pontificia Universidad Javeriana</p>
-          <p><strong>Materia:</strong> [Nombre de la materia]</p>
-          <p><strong>Profesor:</strong> [Nombre del profesor]</p>
+          <p><strong>Materia:</strong> Fundamentos de IoT</p>
           <p><strong>Año:</strong> 2026</p>
         </article>
 

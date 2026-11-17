@@ -2109,6 +2109,383 @@ button.enlace:hover {
 .autor:nth-child(3n + 3) .avatar { background: var(--alga); }
 
 
+/* ---------- 15b) PANEL: ANALÍTICA DEL INICIO ----------
+   Todo esto lo llena analitica.js. Recordatorio: 1 minuto de medición = 1 día. */
+.ventana {
+  margin-top: 32px;
+}
+
+.escala-tiempo {
+  margin-left: auto;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mar-oscuro);
+  background: rgba(31, 168, 176, 0.12);
+}
+
+.bloque-analitica {
+  margin-bottom: 18px;
+}
+
+.bloque-analitica h2 {
+  margin: 0 0 4px;
+  font-family: var(--letra-titulo);
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+}
+
+.cabeza-analitica {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 20px;
+  margin-bottom: 14px;
+}
+
+.cabeza-analitica p,
+.explica {
+  margin: 0;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+
+.explica {
+  margin-bottom: 16px;
+}
+
+.blanqueo .cabeza-analitica {
+  display: block;
+}
+
+/* La fórmula de la variación, como en el documento del proyecto */
+.formula {
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tres recuadros de variación % */
+.variaciones {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.variacion {
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--color-var);
+}
+
+.variacion h3 {
+  margin: 0;
+  font-size: 15px;
+  color: var(--texto-suave);
+}
+
+.porcentaje {
+  margin: 4px 0 2px;
+  font-family: var(--letra-titulo);
+  font-weight: 600;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--abismo);
+}
+
+.detalle-variacion {
+  margin: 0;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+
+/* Blanqueo: gráfica, franja de colores y listas */
+.blanqueo canvas {
+  margin-top: 4px;
+}
+
+.franja-dias {
+  display: grid;
+  gap: 1px;
+  height: 18px;
+  margin: 12px 0 0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.franja-dias span {
+  min-width: 0;
+}
+
+.franja-dias .sin-dato {
+  background: repeating-linear-gradient(45deg, #dbe8ea 0 3px, #f3f8f8 3px 6px);
+}
+
+.extremos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 22px;
+}
+
+.extremos h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.lista-dias {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-dias li {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--espuma);
+}
+
+.lista-dias strong {
+  font-family: var(--letra-titulo);
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.lista-dias span {
+  font-size: 14px;
+}
+
+.lista-dias small {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+#diasBlancos li {
+  border-left: 4px solid #e9dfcc;
+}
+
+#diasSanos li {
+  border-left: 4px solid var(--coral);
+}
+
+/* El índice acumulado dentro del acuario */
+.salud .indice-blanqueo {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Rejilla de tarjetas de analítica (2 columnas) */
+.rejilla-analitica {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.rejilla-analitica .bloque-analitica {
+  margin: 0;
+}
+
+.leyenda-franja {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+.leyenda-franja .degradado {
+  width: 120px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff6b6b, #f4efe4);
+  border: 1px solid var(--borde);
+}
+
+.leyenda-franja .clave.sin-dato {
+  margin-left: 12px;
+  background: repeating-linear-gradient(45deg, #dbe8ea 0 3px, #f3f8f8 3px 6px);
+  border: 1px solid var(--borde);
+}
+
+/* Barras de tiempo en cada nivel */
+.fila-nivel {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.nombre-fila {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.barra-nivel {
+  display: flex;
+  height: 24px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--espuma);
+}
+
+.barra-nivel .z {
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--abismo);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.barra-nivel .z.critico {
+  color: var(--blanco);
+}
+
+.leyenda-niveles {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+.leyenda-niveles .clave:not(:first-child) {
+  margin-left: 10px;
+}
+
+/* Eventos, tendencias */
+.evento {
+  padding: 12px 0;
+  border-top: 1px solid var(--borde);
+}
+
+.evento:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.evento h3 {
+  margin: 0 0 2px;
+  font-size: 15px;
+}
+
+.evento p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.secundario-texto {
+  color: var(--texto-suave);
+}
+
+.alerta-texto {
+  margin-top: 4px !important;
+  font-weight: 700;
+  color: var(--coral-texto);
+}
+
+/* Fotos del equipo */
+img.avatar {
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.persona img.avatar {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.persona .carrera {
+  font-size: 13px;
+}
+
+.autor img.avatar {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto;
+  border: 3px solid var(--espuma);
+}
+
+.datos-academicos .con-foto {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.datos-academicos .con-foto img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profe {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.profe img {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profe strong {
+  display: block;
+  color: var(--texto);
+}
+
+.profe span {
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+
+@media (max-width: 1100px) {
+  .rejilla-analitica {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .variaciones,
+  .extremos {
+    grid-template-columns: 1fr;
+  }
+
+  .fila-nivel {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .escala-tiempo {
+    margin-left: 0;
+  }
+}
+
+
 /* ---------- 16) EL CORAL (DIBUJO QUE SE BLANQUEA) ----------
    El dibujo (SVG) lo pone el JS dentro de cada class="coral".
    Todo su color sale de UNA variable: --blanqueo
